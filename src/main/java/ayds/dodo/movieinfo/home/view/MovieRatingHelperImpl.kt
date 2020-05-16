@@ -2,8 +2,8 @@ package ayds.dodo.movieinfo.home.view
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 
-class MovieRatingHelperImpl {
-    fun getRatings(movie: OmdbMovie): StringBuilder {
+class MovieRatingHelperImpl : MovieRatingHelper {
+    override fun  getRatings(movie: OmdbMovie): StringBuilder {
         val ratings = StringBuilder()
         for (rating in movie.ratings) {
             when (rating.source) {
