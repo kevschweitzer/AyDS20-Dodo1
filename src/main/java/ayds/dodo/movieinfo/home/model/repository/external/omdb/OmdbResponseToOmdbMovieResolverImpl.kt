@@ -29,6 +29,7 @@ internal class OmdbResponseToOmdbMovieResolverImpl : OmdbResponseToOmdbMovieReso
                 movie.posterUrl = jsonObject["Poster"].asString
             }
             movie.ratings = getRatingsFromJson(jsonObject)
+            movie.duration = jsonObject["Runtime"].asString
         }
         return movie
     }

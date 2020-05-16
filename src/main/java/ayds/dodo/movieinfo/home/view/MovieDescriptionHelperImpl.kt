@@ -2,8 +2,6 @@ package ayds.dodo.movieinfo.home.view
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 
-
-
 internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
     override fun getMovieDescriptionText(movie: OmdbMovie): String {
         if (movie.title.isEmpty()) {
@@ -20,7 +18,8 @@ internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
                     + "Director: " + movie.director + "<br><br>"
                     + "Actors: " + movie.actors + "<br><br>"
                     + "Ratings: <br>" + ratings.toString() + "<br>"
-                    + movie.plot)
+                    + movie.plot + " <br>"
+                    + "Duration: " + movie.duration)
         }
     }
 }
