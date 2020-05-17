@@ -27,7 +27,12 @@ internal class HomeControllerImpl(
 
     private fun onSearchMovieAction() {
         Thread {
-            homeModel.searchMovie(homeView.movieTitle)
+            try {
+                homeModel.searchMovie(homeView.movieTitle)
+            }catch  (e: Exception) {
+                e.printStackTrace()
+                homeView.error("Error de conexión!");
+            }
         }.start()
     }
 

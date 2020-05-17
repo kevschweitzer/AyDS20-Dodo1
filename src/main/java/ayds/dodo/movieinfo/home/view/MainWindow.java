@@ -173,4 +173,9 @@ public class MainWindow implements HomeView {
   private void enableMoreDetails(OmdbMovie movie) {
     modeDetailsButton.setEnabled(!movie.getTitle().isEmpty());
   }
+
+  @Override
+  public void error(@NotNull String msj) {
+    JOptionPane.showMessageDialog(null,msj);
+  }
 }
