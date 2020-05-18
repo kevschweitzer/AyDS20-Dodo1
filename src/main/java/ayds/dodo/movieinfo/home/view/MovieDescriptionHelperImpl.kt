@@ -13,13 +13,16 @@ internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
             if (movie.isLocallyStoraged) {
                 title = "[*]" + movie.title
             }
-            return ("<html><body style='width: 400px;'>" +
-                    title + " - " + movie.year + "<br><br>"
-                    + "Director: " + movie.director + "<br><br>"
-                    + "Actors: " + movie.actors + "<br><br>"
-                    + "Ratings: <br>" + ratings.toString() + "<br>"
-                    + movie.plot + " <br>"
-                    + "Runtime: " + movie.runtime)
+            return ("<html>"
+                        +"<body style='width: 400px;'>"
+                            + title + " - " + movie.year + "<br><br>"
+                            + "Director: " + movie.director + "<br><br>"
+                            + "Actors: " + movie.actors + "<br><br>"
+                            + "Ratings: <br>" + ratings.toString() + "<br>"
+                            + movie.plot + " <br>"
+                            + "Runtime: " + movie.runtime
+                        + "</body>"
+                    + "</html>")
         }
     }
 }
