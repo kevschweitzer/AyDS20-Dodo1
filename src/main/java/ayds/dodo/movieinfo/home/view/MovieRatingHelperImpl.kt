@@ -1,24 +1,48 @@
 package ayds.dodo.movieinfo.home.view
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
+import ayds.dodo.movieinfo.home.model.entities.Rating
 
 class MovieRatingHelperImpl : MovieRatingHelper {
-    override fun  getRatings(movie: OmdbMovie): StringBuilder {
+    override fun getRatings(movie: OmdbMovie): StringBuilder {
         val ratings = StringBuilder()
+        var parser: MovieRatingParser
         for (rating in movie.ratings) {
-            when (rating.source) {
+            parser = when (rating.source) {
                 "Internet Movie Database" -> {
-                    val score = rating.value.split("/").toTypedArray()
-                    ratings.append("IMDB").append(" ").append(score[0]).append("\n")
+                    IMDbRatingParser()
                 }
-                "Rotten Tomatoes" -> ratings.append(rating.source).append(" ").append(rating.value).append("\n")
                 "Metacritic" -> {
-                    val score = rating.value.split("/").toTypedArray()
-                    ratings.append(rating.source).append(" ").append(score[0]).append("%").append("\n")
+                    MetacriticRatingParser()
                 }
-                else -> ratings.append(rating.source).append(" ").append(rating.value).append("\n")
+                else -> DefaultRatingParser()
             }
+            ratings.append(parser.parseMovieRating(rating)).append("\n")
         }
         return ratings
+    }
+}
+
+interface MovieRatingParser {
+    fun parseMovieRating(value: Rating): String
+}
+
+internal class IMDbRatingParser : MovieRatingParser {
+    override fun parseMovieRating(rating: Rating): String {
+        val score = rating.value.split("/").toTypedArray()
+        return "IMDB " + score[0]
+    }
+}
+
+internal class MetacriticRatingParser : MovieRatingParser {
+    override fun parseMovieRating(rating: Rating): String {
+        val score = rating.value.split("/").toTypedArray()
+        return rating.source + " " + score[0] + "%"
+    }
+}
+
+internal class DefaultRatingParser : MovieRatingParser {
+    override fun parseMovieRating(rating: Rating): String {
+        return rating.source + " " + rating.value
     }
 }
