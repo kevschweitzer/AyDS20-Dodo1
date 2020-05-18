@@ -19,7 +19,7 @@ internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
                     + "Actors: " + movie.actors + "<br><br>"
                     + "Ratings: <br>" + ratings.toString() + "<br>"
                     + movie.plot + " <br>"
-                    + "Duration: " + movie.duration)
+                    + "Runtime: " + movie.runtime)
         }
     }
 }

@@ -11,5 +11,5 @@ class OmdbMovie {
     var posterUrl = "https://i.picsum.photos/id/355/267/179.jpg"
     var isLocallyStoraged = false
     var ratings: List<Rating> = ArrayList()
-    var duration = ""
+    var runtime = ""
 }
