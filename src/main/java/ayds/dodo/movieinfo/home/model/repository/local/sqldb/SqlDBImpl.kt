@@ -48,7 +48,7 @@ internal class SqlDBImpl(private val sqlQueries: SqlQueries) : SqlDB(), LocalSto
         }
     }
 
-    override fun getMovie(term: String): OmdbMovie? { // term = title
+    override fun getMovie(term: String): OmdbMovie? {
         openConnection()
         val movie = selectMovieByTerm(term)
         closeConnection()

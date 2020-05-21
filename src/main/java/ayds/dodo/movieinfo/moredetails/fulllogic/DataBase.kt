@@ -15,7 +15,7 @@ object DataBase {
                     println("The driver name is " + meta.driverName)
                     println("A new database has been created.")
                     val statement = connection.createStatement()
-                    statement.queryTimeout = 30 // set timeout to 30 sec.
+                    statement.queryTimeout = 30
                     statement.executeUpdate("create table info (id INTEGER PRIMARY KEY AUTOINCREMENT, title string, plot string, image_url string, source integer)")
                 }
             }
