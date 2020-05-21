@@ -9,7 +9,7 @@ import ayds.observer.Observer
 interface HomeController
 
 internal class HomeControllerImpl(
-    private val homeView: HomeView, private val homeModel: HomeModel
+        private val homeView: HomeView, private val homeModel: HomeModel
 ) : HomeController {
 
     private val observer: Observer<UiEvent> = object : Observer<UiEvent> {
@@ -27,7 +27,7 @@ internal class HomeControllerImpl(
 
     private fun onSearchMovieAction() {
         Thread {
-                homeModel.searchMovie(homeView.movieTitle)
+            homeModel.searchMovie(homeView.movieTitle)
         }.start()
     }
 
