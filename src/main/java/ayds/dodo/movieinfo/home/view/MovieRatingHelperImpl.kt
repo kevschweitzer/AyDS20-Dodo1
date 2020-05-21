@@ -2,6 +2,7 @@ package ayds.dodo.movieinfo.home.view
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 import ayds.dodo.movieinfo.home.model.entities.Rating
+import ayds.dodo.movieinfo.home.view.MovieDescriptionHelperImpl.Companion.HTML_BR
 
 class MovieRatingHelperImpl : MovieRatingHelper {
     override fun getRatings(movie: OmdbMovie): StringBuilder {
@@ -17,7 +18,7 @@ class MovieRatingHelperImpl : MovieRatingHelper {
                 }
                 else -> DefaultRatingParser()
             }
-            ratings.append(parser.parseMovieRating(rating)).append("\n")
+            ratings.append(parser.parseMovieRating(rating)).append(HTML_BR)
         }
         return ratings
     }
