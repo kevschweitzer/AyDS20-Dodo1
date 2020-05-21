@@ -12,16 +12,16 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 object HomeModelModule {
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://www.omdbapi.com/")
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .build()
+            .baseUrl("http://www.omdbapi.com/")
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
 
     private fun getOmdbAPI(): OmdbAPI = retrofit.create(OmdbAPI::class.java)
 
 
     private val repository = OmdbRepositoryImpl(
-        SqlDBImpl(SqlQueriesImpl()), OmdbService(getOmdbAPI(),
-        OmdbResponseToOmdbMovieResolverImpl()
+            SqlDBImpl(SqlQueriesImpl()), OmdbService(getOmdbAPI(),
+            OmdbResponseToOmdbMovieResolverImpl()
     ))
 
     val homeModel: HomeModel = HomeModelImpl(repository)

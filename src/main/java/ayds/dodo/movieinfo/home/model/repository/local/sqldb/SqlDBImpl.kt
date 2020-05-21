@@ -62,7 +62,7 @@ internal class SqlDBImpl(private val sqlQueries: SqlQueries) : SqlDB(), LocalSto
             movie = moviesResultSet?.let { sqlQueries.resultSetToMovieMapper(it) }
             movie?.apply {
                 val ratingsResultSet = statement?.executeQuery(sqlQueries.getSelectRatingsByMovieQuery(movie))
-                ratingsResultSet?.let {  ratings = sqlQueries.resultSetToRatingsMapper(it) }
+                ratingsResultSet?.let { ratings = sqlQueries.resultSetToRatingsMapper(it) }
             }
         } catch (e: SQLException) {
             System.err.println("Get movie by term error " + e.message)
