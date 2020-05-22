@@ -2,7 +2,7 @@ package ayds.dodo.movieinfo.home.model.entities
 
 import java.util.*
 
-class OmdbMovie {
+open class OmdbMovie {
     var title = ""
     var year = ""
     var plot = ""

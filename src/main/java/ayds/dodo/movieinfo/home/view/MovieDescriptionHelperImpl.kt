@@ -1,5 +1,6 @@
 package ayds.dodo.movieinfo.home.view
 
+import ayds.dodo.movieinfo.home.model.entities.NonExistentOmdbMovie
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 
 internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
@@ -18,7 +19,7 @@ internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
     }
 
     override fun getMovieDescriptionText(movie: OmdbMovie): String {
-        return if (movie.title.isEmpty()) {
+        return if (movie is NonExistentOmdbMovie) {
             "Movie not found"
         } else {
             val ratings = MovieRatingHelperImpl().getRatings(movie)

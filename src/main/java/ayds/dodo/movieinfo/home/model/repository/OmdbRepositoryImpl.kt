@@ -1,12 +1,13 @@
 package ayds.dodo.movieinfo.home.model.repository
 
+import ayds.dodo.movieinfo.home.model.entities.NonExistentOmdbMovie
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 import ayds.dodo.movieinfo.home.model.repository.external.ExternalService
 import ayds.dodo.movieinfo.home.model.repository.local.LocalStorage
 
 class OmdbRepositoryImpl(
-    private val localStorage: LocalStorage,
-    private val externalService: ExternalService
+        private val localStorage: LocalStorage,
+        private val externalService: ExternalService
 ) : OmdbRepository {
 
     override fun getMovie(title: String): OmdbMovie? {
@@ -17,10 +18,11 @@ class OmdbRepositoryImpl(
             else -> {
                 try {
                     movie = externalService.getMovie(title)
-                    localStorage.saveMovie(title, movie)
+                    if (movie !is NonExistentOmdbMovie)
+                        localStorage.saveMovie(title, movie)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    return OmdbMovie()
+                    return NonExistentOmdbMovie()
                 }
             }
         }
