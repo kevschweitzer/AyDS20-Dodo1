@@ -48,11 +48,11 @@ public class OtherInfoWindow {
             @Override
             public void run() {
 
-                String text = null; //DataBase.getOverview(movie.getTitle());
+                String text = null;
 
-                String path = null; //DataBase.getImageUrl(movie.getTitle());
+                String path = null;
 
-                if (text != null && path != null) { // exists in db
+                if (text != null && path != null) {
 
                     text = "[*]" + text;
 
@@ -121,8 +121,6 @@ public class OtherInfoWindow {
 
                 textPane2.setText(text);
 
-
-                // set image
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
@@ -136,7 +134,6 @@ public class OtherInfoWindow {
                     JLabel label = new JLabel(new ImageIcon(image));
                     imagePanel.add(label);
 
-                    // Refresh panel
                     contentPane.validate();
                     contentPane.repaint();
 
