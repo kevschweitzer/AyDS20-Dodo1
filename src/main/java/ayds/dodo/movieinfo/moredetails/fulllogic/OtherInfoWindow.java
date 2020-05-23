@@ -125,7 +125,6 @@ public class OtherInfoWindow {
                     JLabel label = new JLabel(new ImageIcon(image));
                     imagePanel.add(label);
 
-                    // Refresh panel
                     contentPane.validate();
                     contentPane.repaint();
 
