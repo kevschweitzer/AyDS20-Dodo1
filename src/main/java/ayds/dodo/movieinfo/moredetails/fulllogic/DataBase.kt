@@ -50,7 +50,7 @@ object DataBase {
             connection?.close()
             return rs.getString("plot")
         } catch (e: SQLException) {
-            System.err.println("Get title error " + e.message)
+            System.err.println("getOverview error " + e.message)
         }
         return null
     }
@@ -67,7 +67,7 @@ object DataBase {
             connection?.close()
             return rs.getString("image_url")
         } catch (e: SQLException) {
-            System.err.println("Get title error " + e.message)
+            System.err.println("getImageTitle error " + e.message)
         }
         return null
     }

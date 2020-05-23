@@ -3,6 +3,7 @@ package ayds.dodo.movieinfo.moredetails.fulllogic;
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -48,11 +49,11 @@ public class OtherInfoWindow {
             @Override
             public void run() {
 
-                String text = null; //DataBase.getOverview(movie.getTitle());
+                String text = null;
 
-                String path = null; //DataBase.getImageUrl(movie.getTitle());
+                String path = "https://www.themoviedb.org/assets/2/v4/logos/256x256-dark-bg-01a111196ed89d59b90c31440b0f77523e9d9a9acac04a7bac00c27c6ce511a9.png";
 
-                if (text != null && path != null) { // exists in db
+                if (text != null && path != null) {
 
                     text = "[*]" + text;
 
@@ -77,22 +78,19 @@ public class OtherInfoWindow {
                             if (year.equals(movie.getYear())) break;
                         }
 
-
                         JsonElement extract = result.get("overview");
 
                         JsonElement backdropPathJson = result.get("backdrop_path");
 
                         String backdropPath = null;
 
-
                         if (!backdropPathJson.isJsonNull()) {
                             backdropPath = backdropPathJson.getAsString();
                         }
 
-
                         JsonElement posterPath = result.get("poster_path");
 
-                        if (extract == null) {
+                        if (extract == null || posterPath == JsonNull.INSTANCE) {
                             text = "No Results";
                         } else {
                             text = extract.getAsString().replace("\\n", "\n");
@@ -102,13 +100,6 @@ public class OtherInfoWindow {
 
                             if (backdropPath != null)
                                 path = "https://image.tmdb.org/t/p/w400/" + backdropPath;
-
-                            if (path == null) {
-                                path = "https://www.themoviedb.org/assets/2/v4/logos/256x256-dark-bg-01a111196ed89d59b90c31440b0f77523e9d9a9acac04a7bac00c27c6ce511a9.png";
-                            }
-
-
-
 
                             DataBase.saveMovieInfo(movie.getTitle(), text, path);
                         }
@@ -121,8 +112,6 @@ public class OtherInfoWindow {
 
                 textPane2.setText(text);
 
-
-                // set image
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
