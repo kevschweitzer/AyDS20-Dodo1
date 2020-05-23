@@ -32,7 +32,6 @@ public class OtherInfoWindow {
 
         textPane2.setContentType("text/html");
 
-        // this is needed to open a link in the browser
         textPane2.addHyperlinkListener(e -> {
             if (HyperlinkEvent.EventType.ACTIVATED.equals(e.getEventType())) {
                 System.out.println(e.getURL());
@@ -57,12 +56,10 @@ public class OtherInfoWindow {
 
                     text = "[*]" + text;
 
-                } else { // get from service
+                } else {
                     Response<String> callResponse;
                     try {
                         callResponse = tmdbAPI.getTerm(movie.getTitle()).execute();
-
-//            System.out.println("JSON " + callResponse.body());
 
 
                         Gson gson = new Gson();
@@ -87,7 +84,6 @@ public class OtherInfoWindow {
 
                         String backdropPath = null;
 
-//            System.out.println("backdropPathJson " + backdropPathJson);
 
                         if (!backdropPathJson.isJsonNull()) {
                             backdropPath = backdropPathJson.getAsString();
@@ -112,7 +108,7 @@ public class OtherInfoWindow {
                             }
 
 
-                            // save to DB  <o/
+
 
                             DataBase.saveMovieInfo(movie.getTitle(), text, path);
                         }
@@ -133,7 +129,7 @@ public class OtherInfoWindow {
                 }
 
                 try {
-//          System.out.println("Get Image from " + path);
+
                     URL url = new URL(path);
                     BufferedImage image = ImageIO.read(url);
                     System.out.println("Load image into frame...");
@@ -159,10 +155,6 @@ public class OtherInfoWindow {
         win.contentPane = new JPanel();
         win.contentPane.setLayout(new BoxLayout(win.contentPane, BoxLayout.PAGE_AXIS));
 
-//    JLabel label = new JLabel();
-//    label.setText("Data from The Movie Data Base");
-//    win.contentPane.add(label);
-
         win.imagePanel = new JPanel();
         win.contentPane.add(win.imagePanel);
 
@@ -181,12 +173,6 @@ public class OtherInfoWindow {
         frame.setVisible(true);
 
         DataBase.createNewDatabase();
-//    DataBase.saveMovieInfo("test", "sarasa", "");
-//
-//
-//    System.out.println(DataBase.getOverview("test"));
-//    System.out.println(DataBase.getOverview("nada"));
-
 
         win.getMoviePlot(movie);
     }
