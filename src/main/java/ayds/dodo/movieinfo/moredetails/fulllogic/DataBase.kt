@@ -32,14 +32,9 @@ object DataBase {
             val statement = connection.createStatement()
             statement.queryTimeout = 30
             statement.executeUpdate(getInsertQuery(title, plot, imageUrl))
+            connection?.close()
         } catch (e: SQLException) {
-            System.err.println("Error saving " + e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
+            System.err.println("Error on saving movie info " + e.message)
         }
     }
 
@@ -52,15 +47,10 @@ object DataBase {
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()
+            connection?.close()
             return rs.getString("plot")
         } catch (e: SQLException) {
             System.err.println("Get title error " + e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
         }
         return null
     }
@@ -74,15 +64,10 @@ object DataBase {
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()
+            connection?.close()
             return rs.getString("image_url")
         } catch (e: SQLException) {
             System.err.println("Get title error " + e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
         }
         return null
     }
@@ -99,14 +84,9 @@ object DataBase {
                 println("title = " + rs.getString("title"))
                 println("source = " + rs.getString("source"))
             }
+            connection?.close()
         } catch (e: SQLException) {
             System.err.println(e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
         }
     }
 
