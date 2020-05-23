@@ -5,45 +5,22 @@ import java.sql.DriverManager
 import java.sql.SQLException
 
 object DataBase {
+    private const val url = "jdbc:sqlite:./extra_info.db"
+    private const val table_create_query = "create table info (id INTEGER PRIMARY KEY AUTOINCREMENT, title string, plot string, image_url string, source integer)"
+
     @JvmStatic
     fun createNewDatabase() {
-        val url = "jdbc:sqlite:./extra_info.db"
         try {
             DriverManager.getConnection(url).use { connection ->
                 if (connection != null) {
                     val meta = connection.metaData
-                    println("The driver name is " + meta.driverName)
-                    println("A new database has been created.")
                     val statement = connection.createStatement()
                     statement.queryTimeout = 30
-                    statement.executeUpdate("create table info (id INTEGER PRIMARY KEY AUTOINCREMENT, title string, plot string, image_url string, source integer)")
+                    statement.executeUpdate(table_create_query)
                 }
             }
         } catch (e: SQLException) {
-            println(e.message)
-        }
-    }
-
-    fun testDB() {
-        var connection: Connection? = null
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery("select * from info")
-            while (rs.next()) { // read the result set
-                println("id = " + rs.getInt("id"))
-                println("title = " + rs.getString("title"))
-                println("source = " + rs.getString("source"))
-            }
-        } catch (e: SQLException) {
-            System.err.println(e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
+            println("Fallo al crear DB: " + e.message)
         }
     }
 
@@ -51,10 +28,10 @@ object DataBase {
     fun saveMovieInfo(title: String, plot: String, imageUrl: String) {
         var connection: Connection? = null
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
+            connection = DriverManager.getConnection(url)
             val statement = connection.createStatement()
             statement.queryTimeout = 30
-            statement.executeUpdate("insert into info values(null, '$title', '$plot', '$imageUrl', 1)")
+            statement.executeUpdate(getInsertQuery(title, plot, imageUrl))
         } catch (e: SQLException) {
             System.err.println("Error saving " + e.message)
         } finally {
@@ -70,10 +47,10 @@ object DataBase {
     fun getOverview(title: String): String? {
         var connection: Connection? = null
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
+            connection = DriverManager.getConnection(url)
             val statement = connection.createStatement()
             statement.queryTimeout = 30
-            val rs = statement.executeQuery("select * from info WHERE title = '$title'")
+            val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()
             return rs.getString("plot")
         } catch (e: SQLException) {
@@ -92,10 +69,10 @@ object DataBase {
     fun getImageUrl(title: String): String? {
         var connection: Connection? = null
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
+            connection = DriverManager.getConnection(url)
             val statement = connection.createStatement()
             statement.queryTimeout = 30
-            val rs = statement.executeQuery("select * from info WHERE title = '$title'")
+            val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()
             return rs.getString("image_url")
         } catch (e: SQLException) {
@@ -108,5 +85,40 @@ object DataBase {
             }
         }
         return null
+    }
+
+    fun testDB() {
+        var connection: Connection? = null
+        try {
+            connection = DriverManager.getConnection(url)
+            val statement = connection.createStatement()
+            statement.queryTimeout = 30
+            val rs = statement.executeQuery(getSelectAllQuery())
+            while (rs.next()) { // read the result set
+                println("id = " + rs.getInt("id"))
+                println("title = " + rs.getString("title"))
+                println("source = " + rs.getString("source"))
+            }
+        } catch (e: SQLException) {
+            System.err.println(e.message)
+        } finally {
+            try {
+                connection?.close()
+            } catch (e: SQLException) {
+                System.err.println(e)
+            }
+        }
+    }
+
+    private fun getSelectAllQuery() : String{
+        return "select * from info"
+    }
+
+    private fun getSelectQuery(title:String) : String{
+        return "select * from info WHERE title = '$title'"
+    }
+
+    private fun getInsertQuery(title: String, plot: String, imageUrl: String) : String{
+        return "insert into info values(null, '$title', '$plot', '$imageUrl', 1)"
     }
 }
