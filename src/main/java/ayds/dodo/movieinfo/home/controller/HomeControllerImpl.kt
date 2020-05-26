@@ -9,7 +9,7 @@ import ayds.observer.Observer
 interface HomeController
 
 internal class HomeControllerImpl(
-    private val homeView: HomeView, private val homeModel: HomeModel
+        private val homeView: HomeView, private val homeModel: HomeModel
 ) : HomeController {
 
     private val observer: Observer<UiEvent> = object : Observer<UiEvent> {
