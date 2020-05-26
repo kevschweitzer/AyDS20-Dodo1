@@ -53,7 +53,6 @@ public class OtherInfoWindow {
 
                 String path = DataBase.getImageUrl(movie.getTitle());
 
-
                 if (text != null && path != null) { // exists in db
 
                     text = "[*]" + text;
@@ -61,7 +60,9 @@ public class OtherInfoWindow {
                     Response<String> callResponse;
                     try {
                         callResponse = tmdbAPI.getTerm(movie.getTitle()).execute();
+
                         System.out.println("JSON " + callResponse.body());
+
 
                         Gson gson = new Gson();
                         JsonObject jobj = gson.fromJson(callResponse.body(), JsonObject.class);
@@ -88,7 +89,7 @@ public class OtherInfoWindow {
                         System.out.println("backdropPathJson " + backdropPathJson);
 
                         if (!backdropPathJson.isJsonNull()) {
-                            backdropPath = backdropPathJson.getAsString();
+                            backdropPath =  backdropPathJson.getAsString();
                         }
 
 
@@ -100,9 +101,9 @@ public class OtherInfoWindow {
                             text = extract.getAsString().replace("\\n", "\n");
                             text = textToHtml(text, movie.getTitle());
 
-                            text += "\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() + ">View Movie Poster</a>";
+                            text+="\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() +">View Movie Poster</a>";
 
-                            if (backdropPath != null)
+                            if(backdropPath != null)
                                 path = "https://image.tmdb.org/t/p/w400/" + backdropPath;
 
                             if (path == null) {
@@ -138,7 +139,6 @@ public class OtherInfoWindow {
                     JLabel label = new JLabel(new ImageIcon(image));
                     imagePanel.add(label);
 
-
                     // Refresh panel
                     contentPane.validate();
                     contentPane.repaint();
@@ -148,9 +148,7 @@ public class OtherInfoWindow {
                 }
 
             }
-        }).
-
-                start();
+        }).start();
     }
 
     public static void open(OmdbMovie movie) {
@@ -172,7 +170,7 @@ public class OtherInfoWindow {
         win.textPane2.setEditable(false);
         win.textPane2.setContentType("text/html");
         win.textPane2.setMaximumSize(new Dimension(600, 400));
-        descriptionPanel.add(win.textPane2);
+        descriptionPanel.add( win.textPane2);
         win.contentPane.add(descriptionPanel);
 
         JFrame frame = new JFrame("Movie Info Dodo");
@@ -184,6 +182,7 @@ public class OtherInfoWindow {
         DataBase.createNewDatabase();
         DataBase.saveMovieInfo("test", "sarasa", "");
 
+
         System.out.println(DataBase.getOverview("test"));
         System.out.println(DataBase.getOverview("nada"));
 
@@ -192,7 +191,9 @@ public class OtherInfoWindow {
     }
 
     public static String textToHtml(String text, String term) {
-        StringBuilder builder = new StringBuilder("<html><body style='width: 400px;'>");
+
+        StringBuilder builder = new StringBuilder("<html><body style='width: 400px'>");
+
         builder.append("<font face=\"arial\">");
 
         String textWithBold = text
