@@ -1,8 +1,9 @@
 package ayds.dodo.movieinfo.moredetails.fulllogic
 
-import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.ResultSet
 import java.sql.SQLException
+import javax.print.attribute.standard.MediaSize
 
 object DataBase {
     private const val URL = "jdbc:sqlite:./extra_info.db"
@@ -11,66 +12,71 @@ object DataBase {
     private const val TITLE_COLUMN = "title"
     private const val PLOT_COLUMN = "plot"
     private const val IMAGE_URL_COLUMN = "image_url"
-    private const val SOURCE_COLUMN = "source"
-    private const val CREATE_TABLE_QUERY = "create table $TABLE_NAME ($ID_COLUMN INTEGER PRIMARY KEY AUTOINCREMENT, $TITLE_COLUMN string, $PLOT_COLUMN string, $IMAGE_URL_COLUMN string, $SOURCE_COLUMN integer)"
-    private const val CHECK_QUERY = "SELECT name FROM sqlite_master WHERE type='table' AND name='$TABLE_NAME'";
-
-    private fun getSelectAllQuery(): String {
-        return "select * from info"
-    }
+    private const val CREATE_TABLE_QUERY = "create table $TABLE_NAME ($ID_COLUMN INTEGER PRIMARY KEY AUTOINCREMENT, $TITLE_COLUMN string, $PLOT_COLUMN string, $IMAGE_URL_COLUMN string)"
 
     private fun getSelectQuery(title: String): String {
         return "select * from info WHERE title = '$title'"
     }
 
     private fun getInsertQuery(title: String, plot: String, imageUrl: String): String {
-        return "insert into info values(null, '$title', '$plot', '$imageUrl', 1)"
+        return "insert into info values(null, '$title', '$plot', '$imageUrl')"
+    }
+
+    private fun getResultSetByTitle(title : String) : ResultSet? {
+        val connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
+        try {
+            statement.queryTimeout = 30
+            return statement.executeQuery(getSelectQuery(title))
+        } catch (e : SQLException){
+            System.err.println("getOverview error " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
+        }
+        return null
     }
 
     @JvmStatic
     fun createNewDatabase() {
+        val connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
         try {
-            DriverManager.getConnection(URL).use { connection ->
-                if (connection != null) {
-                    val checkStatement = connection.createStatement()
-                    val rs = checkStatement.executeQuery(CHECK_QUERY)
-                    rs.next()
-                    if (rs.getString("name") == null) {
-                        val statement = connection.createStatement()
-                        statement.queryTimeout = 30
-                        statement.executeUpdate(CREATE_TABLE_QUERY)
-                    }
+            if (connection != null) {
+                if (connection.metaData?.getTables(null, null, TABLE_NAME, null)?.next() == false) {
+                    statement.queryTimeout = 30
+                    statement.executeUpdate(CREATE_TABLE_QUERY)
                 }
             }
         } catch (e: SQLException) {
             System.err.println("Fallo al crear DB: " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
         }
     }
 
     @JvmStatic
     fun saveMovieInfo(title: String, plot: String, imageUrl: String) {
-        var connection: Connection?
+        val connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
         try {
-            connection = DriverManager.getConnection(URL)
-            val statement = connection.createStatement()
             statement.queryTimeout = 30
             statement.executeUpdate(getInsertQuery(title, plot, imageUrl))
         } catch (e: SQLException) {
-            System.err.println(getInsertQuery(title, plot, imageUrl))
             System.err.println("Error on saving movie info " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
         }
     }
 
     @JvmStatic
     fun getOverview(title: String): String? {
-        var connection: Connection?
-        try {
-            connection = DriverManager.getConnection(URL)
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery(getSelectQuery(title))
-            rs.next()
-            return rs.getString(PLOT_COLUMN)
+        try{
+            val rs = getResultSetByTitle(title)
+            rs?.next()
+            return rs?.getString(PLOT_COLUMN)
         } catch (e: SQLException) {
             System.err.println("getOverview error " + e.message)
         }
@@ -79,36 +85,13 @@ object DataBase {
 
     @JvmStatic
     fun getImageUrl(title: String): String? {
-        var connection: Connection?
         try {
-            connection = DriverManager.getConnection(URL)
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery(getSelectQuery(title))
-            rs.next()
-            return rs.getString(IMAGE_URL_COLUMN)
+            val rs = getResultSetByTitle(title)
+            rs?.next()
+            return rs?.getString(IMAGE_URL_COLUMN)
         } catch (e: SQLException) {
-            System.err.println("getImageTitle error " + e.message)
+            System.err.println("getImageUrl error " + e.message)
         }
         return null
-    }
-
-    @JvmStatic
-    fun testDB() {
-        var connection: Connection?
-        try {
-            connection = DriverManager.getConnection(URL)
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery(getSelectAllQuery())
-            while (rs.next()) {
-                println("$ID_COLUMN = ${rs.getInt(ID_COLUMN)}")
-                println("$TITLE_COLUMN = ${rs.getInt(TITLE_COLUMN)}")
-                println("$SOURCE_COLUMN = ${rs.getInt(SOURCE_COLUMN)}")
-            }
-            connection?.close()
-        } catch (e: SQLException) {
-            System.err.println(e.message)
-        }
     }
 }
