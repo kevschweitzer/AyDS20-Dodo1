@@ -82,7 +82,7 @@ public class OtherInfoWindow {
                         String backdropPath = null;
 
                         if (!backdropPathJson.isJsonNull()) {
-                            backdropPath =  backdropPathJson.getAsString();
+                            backdropPath = backdropPathJson.getAsString();
                         }
 
                         JsonElement posterPath = result.get("poster_path");
@@ -90,15 +90,16 @@ public class OtherInfoWindow {
                         if (extract == null || posterPath == JsonNull.INSTANCE) {
                             text = "No Results";
                         } else {
-                            text = extract.getAsString().replace("\\n", "\n");
-                            text = textToHtml(text, movie.getTitle());
+                            text = extract.getAsString().replace("\\n", "\n")
+                                    .replace("'", "`");
 
-                            text+="\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() +">View Movie Poster</a>";
-
-                            if(backdropPath != null)
+                            if (backdropPath != null)
                                 path = "https://image.tmdb.org/t/p/w400/" + backdropPath;
 
                             DataBase.saveMovieInfo(movie.getTitle(), text, path);
+                            text = textToHtml(text, movie.getTitle());
+
+                            text += "\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() + ">View Movie Poster</a>";
                         }
 
 
@@ -115,9 +116,14 @@ public class OtherInfoWindow {
                 }
 
                 try {
-                    URL url = new URL(path);
-                    BufferedImage image = ImageIO.read(url);
-                    JLabel label = new JLabel(new ImageIcon(image));
+                    JLabel label;
+                    if (path != null) {
+                        URL url = new URL(path);
+                        BufferedImage image = ImageIO.read(url);
+                        label= new JLabel(new ImageIcon(image));
+                    } else {
+                        label = new JLabel("Image not found");
+                    }
                     imagePanel.add(label);
 
                     contentPane.validate();
@@ -149,7 +155,7 @@ public class OtherInfoWindow {
         win.textPane2.setEditable(false);
         win.textPane2.setContentType("text/html");
         win.textPane2.setMaximumSize(new Dimension(600, 400));
-        descriptionPanel.add( win.textPane2);
+        descriptionPanel.add(win.textPane2);
         win.contentPane.add(descriptionPanel);
 
         JFrame frame = new JFrame("Movie Info Dodo");
