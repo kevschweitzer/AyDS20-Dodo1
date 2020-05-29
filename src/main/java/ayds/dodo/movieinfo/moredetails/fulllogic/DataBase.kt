@@ -55,8 +55,8 @@ object DataBase {
             val statement = connection.createStatement()
             statement.queryTimeout = 30
             statement.executeUpdate(getInsertQuery(title, plot, imageUrl))
-            connection?.close()
         } catch (e: SQLException) {
+            System.err.println(getInsertQuery(title, plot, imageUrl))
             System.err.println("Error on saving movie info " + e.message)
         }
     }
@@ -67,11 +67,9 @@ object DataBase {
         try {
             connection = DriverManager.getConnection(URL)
             val statement = connection.createStatement()
-
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()
-            connection?.close()
             return rs.getString(PLOT_COLUMN)
         } catch (e: SQLException) {
             System.err.println("getOverview error " + e.message)
@@ -88,7 +86,6 @@ object DataBase {
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()
-            connection?.close()
             return rs.getString(IMAGE_URL_COLUMN)
         } catch (e: SQLException) {
             System.err.println("getImageTitle error " + e.message)

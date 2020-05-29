@@ -71,7 +71,8 @@ public class OtherInfoWindow {
 
                             String year = result.get("release_date").getAsString().split("-")[0];
 
-                            if (year.equals(movie.getYear())) break;
+                            if (year.equals(movie.getYear()))
+                                break;
                         }
 
                         JsonElement extract = result.get("overview");
@@ -116,7 +117,6 @@ public class OtherInfoWindow {
                 try {
                     URL url = new URL(path);
                     BufferedImage image = ImageIO.read(url);
-                    System.out.println("Load image into frame...");
                     JLabel label = new JLabel(new ImageIcon(image));
                     imagePanel.add(label);
 
@@ -126,7 +126,6 @@ public class OtherInfoWindow {
                 } catch (Exception exp) {
                     exp.printStackTrace();
                 }
-
             }
         }).start();
     }
