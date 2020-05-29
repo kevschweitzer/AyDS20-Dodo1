@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -14,6 +16,7 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 
@@ -23,7 +26,6 @@ public class OtherInfoWindow {
     private JPanel imagePanel;
 
     public void getMoviePlot(OmdbMovie movie) {
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.themoviedb.org/3/")
                 .addConverterFactory(ScalarsConverterFactory.create())
@@ -45,95 +47,7 @@ public class OtherInfoWindow {
             }
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String text = DataBase.getOverview(movie.getTitle());
-
-                String path = DataBase.getImageUrl(movie.getTitle());
-
-                if (text != null && path != null) {
-                    text = "[*]" + text;
-                } else {
-                    Response<String> callResponse;
-                    try {
-                        callResponse = tmdbAPI.getTerm(movie.getTitle()).execute();
-
-                        Gson gson = new Gson();
-                        JsonObject jobj = gson.fromJson(callResponse.body(), JsonObject.class);
-
-                        Iterator<JsonElement> resultIterator = jobj.get("results").getAsJsonArray().iterator();
-
-                        JsonObject result = null;
-
-                        while (resultIterator.hasNext()) {
-                            result = resultIterator.next().getAsJsonObject();
-
-                            String year = result.get("release_date").getAsString().split("-")[0];
-
-                            if (year.equals(movie.getYear()))
-                                break;
-                        }
-
-                        JsonElement extract = result.get("overview");
-
-                        JsonElement backdropPathJson = result.get("backdrop_path");
-
-                        String backdropPath = null;
-
-                        if (!backdropPathJson.isJsonNull()) {
-                            backdropPath = backdropPathJson.getAsString();
-                        }
-
-                        JsonElement posterPath = result.get("poster_path");
-
-                        if (extract == null || posterPath == JsonNull.INSTANCE) {
-                            text = "No Results";
-                        } else {
-                            text = extract.getAsString().replace("\\n", "\n")
-                                    .replace("'", "`");
-
-                            if (backdropPath != null)
-                                path = "https://image.tmdb.org/t/p/w400/" + backdropPath;
-
-                            DataBase.saveMovieInfo(movie.getTitle(), text, path);
-                            text = textToHtml(text, movie.getTitle());
-
-                            text += "\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() + ">View Movie Poster</a>";
-                        }
-
-
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                }
-
-                textPane2.setText(text);
-
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                }
-
-                try {
-                    JLabel label;
-                    if (path != null) {
-                        URL url = new URL(path);
-                        BufferedImage image = ImageIO.read(url);
-                        label= new JLabel(new ImageIcon(image));
-                    } else {
-                        label = new JLabel("Image not found");
-                    }
-                    imagePanel.add(label);
-
-                    contentPane.validate();
-                    contentPane.repaint();
-
-                } catch (Exception exp) {
-                    exp.printStackTrace();
-                }
-            }
-        }).start();
+        new Thread(new OtherWindowRunnable(movie, tmdbAPI)).start();
     }
 
     public static void open(OmdbMovie movie) {
@@ -185,4 +99,113 @@ public class OtherInfoWindow {
         return builder.toString();
     }
 
+
+    private class OtherWindowRunnable implements Runnable {
+        private final OmdbMovie movie;
+        private final TheMovieDBAPI tmdbAPI;
+
+        public OtherWindowRunnable(OmdbMovie movie, TheMovieDBAPI tmdbAPI) {
+            this.movie = movie;
+            this.tmdbAPI = tmdbAPI;
+        }
+
+        @Override
+        public void run() {
+            String text = DataBase.getOverview(movie.getTitle());
+
+            String path = DataBase.getImageUrl(movie.getTitle());
+
+            if (text != null && path != null) {
+                text = "[*]" + text;
+            } else {
+                try {
+                    JsonObject result = getInfoFromTmdb();
+                    String backdropPath = getBackdrop(result);
+
+                    JsonElement posterPath = result.get("poster_path");
+
+                    JsonElement extract = result.get("overview");
+                    if (extract == null || posterPath == JsonNull.INSTANCE) {
+                        text = "No Results";
+                    } else {
+                        text = formatText(posterPath, extract);
+
+                        if (backdropPath != null)
+                            path = "https://image.tmdb.org/t/p/w400/" + backdropPath;
+
+                        DataBase.saveMovieInfo(movie.getTitle(), text, path);
+                    }
+
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    setImageLabel(path);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+            textPane2.setText(text);
+        }
+
+        @NotNull
+        private String formatText(JsonElement posterPath, JsonElement extract) {
+            String text;
+            text = extract.getAsString().replace("\\n", "\n");
+            text = textToHtml(text, movie.getTitle());
+            text += "\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() + ">View Movie Poster</a>";
+            return text;
+        }
+
+        @Nullable
+        private String getBackdrop(JsonObject result) {
+            JsonElement backdropPathJson = result.get("backdrop_path");
+
+            String backdropPath = null;
+
+            if (!backdropPathJson.isJsonNull()) {
+                backdropPath = backdropPathJson.getAsString();
+            }
+            return backdropPath;
+        }
+
+        private void setImageLabel(String path) throws IOException {
+            JLabel label;
+            if (path != null) {
+                URL url = new URL(path);
+                BufferedImage image = ImageIO.read(url);
+                label = new JLabel(new ImageIcon(image));
+            } else {
+                label = new JLabel("Image not found");
+            }
+            imagePanel.add(label);
+
+            contentPane.validate();
+            contentPane.repaint();
+        }
+
+        @Nullable
+        private JsonObject getInfoFromTmdb() throws java.io.IOException {
+            Iterator<JsonElement> resultIterator = getJsonElementIterator();
+
+            JsonObject result = null;
+
+            while (resultIterator.hasNext()) {
+                result = resultIterator.next().getAsJsonObject();
+                String year = result.get("release_date").getAsString().split("-")[0];
+
+                if (year.equals(movie.getYear()))
+                    break;
+            }
+            return result;
+        }
+
+        @NotNull
+        private Iterator<JsonElement> getJsonElementIterator() throws java.io.IOException {
+            Response<String> callResponse;
+            callResponse = tmdbAPI.getTerm(movie.getTitle()).execute();
+
+            Gson gson = new Gson();
+            JsonObject jobj = gson.fromJson(callResponse.body(), JsonObject.class);
+
+            return jobj.get("results").getAsJsonArray().iterator();
+        }
+    }
 }
