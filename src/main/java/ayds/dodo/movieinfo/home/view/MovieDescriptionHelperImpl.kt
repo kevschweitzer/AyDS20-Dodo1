@@ -19,7 +19,7 @@ internal class MovieDescriptionHelperImpl : MovieDescriptionHelper {
     }
 
     override fun getMovieDescriptionText(movie: OmdbMovie): String {
-        return if (movie is NonExistentOmdbMovie) {
+        return if (movie == NonExistentOmdbMovie) {
             "Movie not found"
         } else {
             val ratings = MovieRatingHelperImpl().getRatings(movie)

@@ -48,20 +48,16 @@ public class OtherInfoWindow {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String text = DataBase.getOverview(movie.getTitle());
 
-                String text = null;
-
-                String path = "https://www.themoviedb.org/assets/2/v4/logos/256x256-dark-bg-01a111196ed89d59b90c31440b0f77523e9d9a9acac04a7bac00c27c6ce511a9.png";
+                String path = DataBase.getImageUrl(movie.getTitle());
 
                 if (text != null && path != null) {
-
                     text = "[*]" + text;
-
                 } else {
                     Response<String> callResponse;
                     try {
                         callResponse = tmdbAPI.getTerm(movie.getTitle()).execute();
-
 
                         Gson gson = new Gson();
                         JsonObject jobj = gson.fromJson(callResponse.body(), JsonObject.class);
@@ -85,7 +81,7 @@ public class OtherInfoWindow {
                         String backdropPath = null;
 
                         if (!backdropPathJson.isJsonNull()) {
-                            backdropPath = backdropPathJson.getAsString();
+                            backdropPath =  backdropPathJson.getAsString();
                         }
 
                         JsonElement posterPath = result.get("poster_path");
@@ -96,9 +92,9 @@ public class OtherInfoWindow {
                             text = extract.getAsString().replace("\\n", "\n");
                             text = textToHtml(text, movie.getTitle());
 
-                            text += "\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() + ">View Movie Poster</a>";
+                            text+="\n" + "<a href=https://image.tmdb.org/t/p/w400/" + posterPath.getAsString() +">View Movie Poster</a>";
 
-                            if (backdropPath != null)
+                            if(backdropPath != null)
                                 path = "https://image.tmdb.org/t/p/w400/" + backdropPath;
 
                             DataBase.saveMovieInfo(movie.getTitle(), text, path);
@@ -118,7 +114,6 @@ public class OtherInfoWindow {
                 }
 
                 try {
-
                     URL url = new URL(path);
                     BufferedImage image = ImageIO.read(url);
                     System.out.println("Load image into frame...");
@@ -143,6 +138,10 @@ public class OtherInfoWindow {
         win.contentPane = new JPanel();
         win.contentPane.setLayout(new BoxLayout(win.contentPane, BoxLayout.PAGE_AXIS));
 
+        JLabel label = new JLabel();
+        label.setText("Data from The Movie Data Base");
+        win.contentPane.add(label);
+
         win.imagePanel = new JPanel();
         win.contentPane.add(win.imagePanel);
 
@@ -151,7 +150,7 @@ public class OtherInfoWindow {
         win.textPane2.setEditable(false);
         win.textPane2.setContentType("text/html");
         win.textPane2.setMaximumSize(new Dimension(600, 400));
-        descriptionPanel.add(win.textPane2);
+        descriptionPanel.add( win.textPane2);
         win.contentPane.add(descriptionPanel);
 
         JFrame frame = new JFrame("Movie Info Dodo");
@@ -166,7 +165,6 @@ public class OtherInfoWindow {
     }
 
     public static String textToHtml(String text, String term) {
-
         StringBuilder builder = new StringBuilder("<html><body style=\"width: 400px;\">");
 
         builder.append("<font face=\"arial\">");

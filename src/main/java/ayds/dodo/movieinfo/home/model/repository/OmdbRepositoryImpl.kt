@@ -22,7 +22,7 @@ class OmdbRepositoryImpl(
                         localStorage.saveMovie(title, movie)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    return NonExistentOmdbMovie()
+                    return NonExistentOmdbMovie
                 }
             }
         }

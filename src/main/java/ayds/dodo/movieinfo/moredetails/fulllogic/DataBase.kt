@@ -15,15 +15,15 @@ object DataBase {
     private const val CREATE_TABLE_QUERY = "create table $TABLE_NAME ($ID_COLUMN INTEGER PRIMARY KEY AUTOINCREMENT, $TITLE_COLUMN string, $PLOT_COLUMN string, $IMAGE_URL_COLUMN string, $SOURCE_COLUMN integer)"
     private const val CHECK_QUERY = "SELECT name FROM sqlite_master WHERE type='table' AND name='$TABLE_NAME'";
 
-    private fun getSelectAllQuery() : String{
+    private fun getSelectAllQuery(): String {
         return "select * from info"
     }
 
-    private fun getSelectQuery(title:String) : String{
+    private fun getSelectQuery(title: String): String {
         return "select * from info WHERE title = '$title'"
     }
 
-    private fun getInsertQuery(title: String, plot: String, imageUrl: String) : String{
+    private fun getInsertQuery(title: String, plot: String, imageUrl: String): String {
         return "insert into info values(null, '$title', '$plot', '$imageUrl', 1)"
     }
 
@@ -67,6 +67,7 @@ object DataBase {
         try {
             connection = DriverManager.getConnection(URL)
             val statement = connection.createStatement()
+
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             rs.next()

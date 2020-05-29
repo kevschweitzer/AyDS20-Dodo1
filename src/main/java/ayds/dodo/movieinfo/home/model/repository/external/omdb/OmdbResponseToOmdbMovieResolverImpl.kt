@@ -33,7 +33,7 @@ internal class OmdbResponseToOmdbMovieResolverImpl : OmdbResponseToOmdbMovieReso
             movie.ratings = getRatingsFromJson(jsonObject)
             movie.runtime = jsonObject["Runtime"].asString
             movie
-        } else NonExistentOmdbMovie()
+        } else NonExistentOmdbMovie
 
     }
 
