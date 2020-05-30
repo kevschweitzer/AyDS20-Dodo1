@@ -116,7 +116,7 @@ public class OtherInfoWindow {
             String path = DataBase.getImageUrl(movie.getTitle());
 
             if (text != null && path != null) {
-                text = "[*]" + text;
+                //text = "[*]" + text;
             } else {
                 try {
                     JsonObject result = getInfoFromTmdb();
@@ -135,13 +135,18 @@ public class OtherInfoWindow {
 
                         DataBase.saveMovieInfo(movie.getTitle(), text, path);
                     }
-
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    setImageLabel(path);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             }
+
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                setImageLabel(path);
+            }  catch (Exception e1) {
+                e1.printStackTrace();
+            }
+
             textPane2.setText(text);
         }
 

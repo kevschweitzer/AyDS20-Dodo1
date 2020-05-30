@@ -3,7 +3,6 @@ package ayds.dodo.movieinfo.moredetails.fulllogic
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.SQLException
-import javax.print.attribute.standard.MediaSize
 
 object DataBase {
     private const val URL = "jdbc:sqlite:./extra_info.db"
@@ -20,21 +19,6 @@ object DataBase {
 
     private fun getInsertQuery(title: String, plot: String, imageUrl: String): String {
         return "insert into info values(null, '$title', '$plot', '$imageUrl')"
-    }
-
-    private fun getResultSetByTitle(title : String) : ResultSet? {
-        val connection = DriverManager.getConnection(URL)
-        val statement = connection.createStatement()
-        try {
-            statement.queryTimeout = 30
-            return statement.executeQuery(getSelectQuery(title))
-        } catch (e : SQLException){
-            System.err.println("getOverview error " + e.message)
-        } finally {
-            statement.close()
-            connection.close()
-        }
-        return null
     }
 
     @JvmStatic
@@ -73,24 +57,29 @@ object DataBase {
 
     @JvmStatic
     fun getOverview(title: String): String? {
-        try{
-            val rs = getResultSetByTitle(title)
-            rs?.next()
-            return rs?.getString(PLOT_COLUMN)
-        } catch (e: SQLException) {
-            System.err.println("getOverview error " + e.message)
-        }
-        return null
+        return getColumnByTitle(title, PLOT_COLUMN)
     }
 
     @JvmStatic
     fun getImageUrl(title: String): String? {
+        return getColumnByTitle(title, IMAGE_URL_COLUMN)
+    }
+
+    private fun getColumnByTitle(title: String, column: String): String? {
+        val connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
         try {
-            val rs = getResultSetByTitle(title)
-            rs?.next()
-            return rs?.getString(IMAGE_URL_COLUMN)
+            statement.queryTimeout = 30
+            val rs = statement.executeQuery(getSelectQuery(title))
+            return if (!rs.isClosed) {
+                rs.next()
+                rs.getString(column)
+            } else null
         } catch (e: SQLException) {
             System.err.println("getImageUrl error " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
         }
         return null
     }
