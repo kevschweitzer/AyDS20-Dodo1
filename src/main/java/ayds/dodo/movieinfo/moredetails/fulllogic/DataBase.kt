@@ -77,4 +77,9 @@ object DataBase {
     fun getImageUrl(title: String): String? {
         return getColumnByTitle(title, IMAGE_URL_COLUMN)
     }
+
+    @JvmStatic
+    fun getPosterUrl(title: String) : String? {
+        return getColumnByTitle(title, POSTER_URL_COLUMN)
+    }
 }
