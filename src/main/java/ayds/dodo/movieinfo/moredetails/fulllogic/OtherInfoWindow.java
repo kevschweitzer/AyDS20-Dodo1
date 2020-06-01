@@ -158,7 +158,7 @@ public class OtherInfoWindow {
                         if (backdropPath != null && !backdropPath.equals(""))
                             path = IMAGE_URL_BASE + backdropPath;
 
-                        DataBase.saveMovieInfo(movie.getTitle(), text, path);
+                        DataBase.saveMovieInfo(movie.getTitle(), text, path, posterPath.getAsString());
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
