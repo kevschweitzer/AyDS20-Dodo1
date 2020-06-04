@@ -17,40 +17,42 @@ object DataBase {
     private fun getInsertQuery(title: String, plot: String, imageUrl: String) = "insert into info values(null, '$title', '$plot', '$imageUrl')"
 
     private fun getColumnByTitle(title: String, column: String): String? {
-        var toRet : String? = null
-        DriverManager.getConnection(URL).use { connection ->
-            try {
-                val statement = connection.createStatement()
-                statement.queryTimeout = 30
-                val rs = statement.executeQuery(getSelectQuery(title))
-                toRet = if (!rs.isClosed) {
-                    rs.next()
-                    rs.getString(column)
-                } else {
-                    null
-                }
-            } catch (e: SQLException) {
-                System.err.println("getImageUrl error " + e.message)
-            }
+        var connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
+        try {
+            statement.queryTimeout = 30
+            val rs = statement.executeQuery(getSelectQuery(title))
+            return if (!rs.isClosed) {
+                rs.next()
+                rs.getString(column)
+            } else null
+        } catch (e: SQLException) {
+            System.err.println("Error getting column: \""+column+"\": " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
         }
-        return toRet
+        return null
     }
 
     @JvmStatic
     fun createNewDatabase() {
-        DriverManager.getConnection(URL).use { connection ->
-            try {
-                val statement = connection.createStatement()
-                if (connection != null) {
-                    if (connection.metaData?.getTables(null, null, TABLE_NAME, null)?.next() == false) {
-                        statement.queryTimeout = 30
-                        statement.executeUpdate(CREATE_TABLE_QUERY)
-                    }
+        var connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
+        try {
+            if (connection != null) {
+                if (connection.metaData?.getTables(null, null, TABLE_NAME, null)?.next() == false) {
+                    statement.queryTimeout = 30
+                    statement.executeUpdate(CREATE_TABLE_QUERY)
                 }
-            } catch (e: SQLException) {
-                System.err.println("Fallo al crear DB: " + e.message)
             }
+        } catch (e: SQLException) {
+            System.err.println("Error creating DB: " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
         }
+
     }
 
     @JvmStatic
