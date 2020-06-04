@@ -4,17 +4,19 @@ import java.sql.DriverManager
 import java.sql.SQLException
 
 object DataBase {
+    private const val STATEMENT_TIMEOUT = 30
     private const val URL = "jdbc:sqlite:./extra_info.db"
     private const val TABLE_NAME = "info"
     private const val ID_COLUMN = "id"
     private const val TITLE_COLUMN = "title"
     private const val PLOT_COLUMN = "plot"
     private const val IMAGE_URL_COLUMN = "image_url"
-    private const val CREATE_TABLE_QUERY = "create table $TABLE_NAME ($ID_COLUMN INTEGER PRIMARY KEY AUTOINCREMENT, $TITLE_COLUMN string, $PLOT_COLUMN string, $IMAGE_URL_COLUMN string)"
+    private const val POSTER_URL_COLUMN = "poster_url"
+    private const val CREATE_TABLE_QUERY = "create table $TABLE_NAME ($ID_COLUMN INTEGER PRIMARY KEY AUTOINCREMENT, $TITLE_COLUMN string, $PLOT_COLUMN string, $IMAGE_URL_COLUMN string, $POSTER_URL_COLUMN string)"
 
     private fun getSelectQuery(title: String) = "select * from info WHERE title = '$title'"
 
-    private fun getInsertQuery(title: String, plot: String, imageUrl: String) = "insert into info values(null, '$title', '$plot', '$imageUrl')"
+    private fun getInsertQuery(title: String, plot: String, imageUrl: String, posterUrl : String) = "insert into info values(null, '$title', '$plot', '$imageUrl', '$posterUrl')"
 
     private fun getColumnByTitle(title: String, column: String): String? {
         var connection = DriverManager.getConnection(URL)
@@ -52,18 +54,17 @@ object DataBase {
             statement.close()
             connection.close()
         }
-
     }
 
     @JvmStatic
-    fun saveMovieInfo(title: String, plot: String, imageUrl: String) {
+    fun saveMovieInfo(movie: TMDBMovie) {
         DriverManager.getConnection(URL).use { connection ->
             try {
                 val statement = connection.createStatement()
-                statement.queryTimeout = 30
-                statement.executeUpdate(getInsertQuery(title, plot, imageUrl))
+                statement.queryTimeout = STATEMENT_TIMEOUT
+                statement.executeUpdate(getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
             } catch (e: SQLException) {
-                System.err.println("Error on saving movie info " + e.message)
+                System.err.println("saveMovieInfo error: " + e.message)
             }
         }
     }
@@ -76,5 +77,10 @@ object DataBase {
     @JvmStatic
     fun getImageUrl(title: String): String? {
         return getColumnByTitle(title, IMAGE_URL_COLUMN)
+    }
+
+    @JvmStatic
+    fun getPosterUrl(title: String) : String? {
+        return getColumnByTitle(title, POSTER_URL_COLUMN)
     }
 }

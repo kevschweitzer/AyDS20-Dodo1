@@ -78,8 +78,9 @@ public class OtherInfoWindow {
                     text = formatText(movie, posterPath, extract);
                     if (backdropPath != null && !backdropPath.equals(""))
                         path = IMAGE_URL_BASE + backdropPath;
+                    TMDBMovie tmdbMovie = getTMDbMovie(movie, text, path, posterPath);
 
-                    DataBase.saveMovieInfo(movie.getTitle(), text, path);
+                    DataBase.saveMovieInfo(tmdbMovie);
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -90,7 +91,17 @@ public class OtherInfoWindow {
         updateUI(text, path);
     }
 
-    private void updateUI(String text, String path){
+    @NotNull
+    private TMDBMovie getTMDbMovie(OmdbMovie movie, String text, String path, JsonElement posterPath) {
+        TMDBMovie tmdbMovie = new TMDBMovie();
+        tmdbMovie.setTitle(movie.getTitle());
+        tmdbMovie.setPlot(text);
+        tmdbMovie.setImageUrl(path);
+        tmdbMovie.setPosterUrl(posterPath.getAsString());
+        return tmdbMovie;
+    }
+
+    private void updateUI(String text, String path) {
         try {
             BufferedImage image = getImageFromURL(path);
             setImageLabel(image);
