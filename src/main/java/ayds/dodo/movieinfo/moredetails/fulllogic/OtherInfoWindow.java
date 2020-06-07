@@ -60,24 +60,18 @@ public class OtherInfoWindow {
             try {
                 Iterator<JsonElement> resultIterator = getJsonElementIterator(tmdbAPI, movie);
                 JsonObject result = getInfoFromTmdb(resultIterator, movie);
-                String backdropPath = null;
-                JsonElement posterPath = JsonNull.INSTANCE;
-                JsonElement extract = JsonNull.INSTANCE;
-
                 if (result != null) {
-                    backdropPath = getBackdrop(result);
-                    posterPath = result.get(POSTER_PATH_JSON);
-                    extract = result.get(OVERVIEW_JSON);
-                }
+                    String backdropPath = getBackdrop(result);
+                    JsonElement posterPath = result.get(POSTER_PATH_JSON);
+                    JsonElement extract = result.get(OVERVIEW_JSON);
 
-                if (extract != JsonNull.INSTANCE && posterPath != JsonNull.INSTANCE) {
-                    String path = IMAGE_NOT_FOUND;
-                    String text = formatText(movie, posterPath, extract);
-                    if (backdropPath != null && !backdropPath.equals(""))
-                        path = IMAGE_URL_BASE + backdropPath;
-                    tmdbMovieSearched = getTMDbMovie(movie, text, path, posterPath);
+                    if (extract != JsonNull.INSTANCE && posterPath != JsonNull.INSTANCE) {
+                        String path = backdropPath != null && !backdropPath.equals("") ? IMAGE_URL_BASE + backdropPath : IMAGE_NOT_FOUND;
+                        String text = formatText(movie, posterPath, extract);
+                        tmdbMovieSearched = getTMDbMovie(movie, text, path, posterPath);
 
-                    DataBase.saveMovieInfo(tmdbMovieSearched);
+                        DataBase.saveMovieInfo(tmdbMovieSearched);
+                    }
                 } else{
                     tmdbMovieSearched.setPlot(NO_RESULTS_MESSAGES);
                     tmdbMovieSearched.setImageUrl(IMAGE_NOT_FOUND);
