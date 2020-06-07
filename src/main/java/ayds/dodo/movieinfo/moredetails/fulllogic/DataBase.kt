@@ -20,14 +20,14 @@ object DataBase {
 
     @JvmStatic
     fun getTmdbMovie(title: String): TmdbMovie {
-        var connection = DriverManager.getConnection(URL)
+        val connection = DriverManager.getConnection(URL)
         val statement = connection.createStatement()
         try {
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             return if (!rs.isClosed) {
                 rs.next()
-                val movie=TmdbMovie()
+                val movie = TmdbMovie()
                 movie.title = title
                 movie.plot = rs.getString(PLOT_COLUMN)
                 movie.imageUrl = rs.getString(IMAGE_URL_COLUMN)
@@ -45,7 +45,7 @@ object DataBase {
 
     @JvmStatic
     fun createNewDatabase() {
-        var connection = DriverManager.getConnection(URL)
+        val connection = DriverManager.getConnection(URL)
         val statement = connection.createStatement()
         try {
             if (connection != null) {

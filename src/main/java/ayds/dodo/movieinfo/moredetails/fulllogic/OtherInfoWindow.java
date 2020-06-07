@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.Iterator;
 
 import static ayds.dodo.movieinfo.moredetails.fulllogic.NonExistentTmdbMovie.IMAGE_NOT_FOUND;
-import static ayds.dodo.movieinfo.moredetails.fulllogic.NonExistentTmdbMovie.NO_RESULTS_MESSAGES;
 
 public class OtherInfoWindow {
     private JPanel contentPane;
@@ -49,15 +48,13 @@ public class OtherInfoWindow {
 
         TheMovieDBAPI tmdbAPI = retrofit.create(TheMovieDBAPI.class);
 
-        new Thread(() -> {
-            initOtherInfoData(movie, tmdbAPI);
-        }).start();
+        new Thread(() -> initOtherInfoData(movie, tmdbAPI)).start();
     }
 
     private void initOtherInfoData(OmdbMovie movie, TheMovieDBAPI tmdbAPI) {
         TmdbMovie tmdbMovieSearched = DataBase.getTmdbMovie(movie.getTitle());
 
-        if (tmdbMovieSearched==NonExistentTmdbMovie.INSTANCE) {
+        if (tmdbMovieSearched == NonExistentTmdbMovie.INSTANCE) {
             try {
                 Iterator<JsonElement> resultIterator = getJsonElementIterator(tmdbAPI, movie);
                 JsonObject result = getInfoFromTmdb(resultIterator, movie);
@@ -220,7 +217,7 @@ public class OtherInfoWindow {
         return backdropPath;
     }
 
-    private void setImageLabel(BufferedImage image) throws IOException {
+    private void setImageLabel(BufferedImage image){
         JLabel label = new JLabel(new ImageIcon(image));
         imagePanel.add(label);
         contentPane.validate();
@@ -228,7 +225,7 @@ public class OtherInfoWindow {
     }
 
     @Nullable
-    private JsonObject getInfoFromTmdb(Iterator<JsonElement> resultIterator, OmdbMovie movie) throws java.io.IOException {
+    private JsonObject getInfoFromTmdb(Iterator<JsonElement> resultIterator, OmdbMovie movie){
         JsonObject result = null;
         while (resultIterator.hasNext()) {
             result = resultIterator.next().getAsJsonObject();
