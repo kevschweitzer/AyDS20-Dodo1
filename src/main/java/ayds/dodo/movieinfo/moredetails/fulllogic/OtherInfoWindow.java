@@ -54,11 +54,9 @@ public class OtherInfoWindow {
     }
 
     private void initOtherInfoData(OmdbMovie movie, TheMovieDBAPI tmdbAPI) {
-        String text = DataBase.getOverview(movie.getTitle());
-        String path = DataBase.getImageUrl(movie.getTitle());
+        TmdbMovie tmdbMovieSearched = DataBase.getTmdbMovie(movie.getTitle());
 
-        if (text == null || path == null) {
-            path = IMAGE_NOT_FOUND;
+        if (tmdbMovieSearched==NonExistentTmdbMovie.INSTANCE) {
             try {
                 Iterator<JsonElement> resultIterator = getJsonElementIterator(tmdbAPI, movie);
                 JsonObject result = getInfoFromTmdb(resultIterator, movie);
@@ -72,15 +70,17 @@ public class OtherInfoWindow {
                     extract = result.get(OVERVIEW_JSON);
                 }
 
-                if (extract == JsonNull.INSTANCE || posterPath == JsonNull.INSTANCE) {
-                    text = NO_RESULTS_MESSAGES;
-                } else {
-                    text = formatText(movie, posterPath, extract);
+                if (extract != JsonNull.INSTANCE && posterPath != JsonNull.INSTANCE) {
+                    String path = IMAGE_NOT_FOUND;
+                    String text = formatText(movie, posterPath, extract);
                     if (backdropPath != null && !backdropPath.equals(""))
                         path = IMAGE_URL_BASE + backdropPath;
-                    TMDBMovie tmdbMovie = getTMDbMovie(movie, text, path, posterPath);
+                    tmdbMovieSearched = getTMDbMovie(movie, text, path, posterPath);
 
-                    DataBase.saveMovieInfo(tmdbMovie);
+                    DataBase.saveMovieInfo(tmdbMovieSearched);
+                } else{
+                    tmdbMovieSearched.setPlot(NO_RESULTS_MESSAGES);
+                    tmdbMovieSearched.setImageUrl(IMAGE_NOT_FOUND);
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -88,12 +88,12 @@ public class OtherInfoWindow {
         }
 
         setSystemLookAndFeel();
-        updateUI(text, path);
+        updateUI(tmdbMovieSearched);
     }
 
     @NotNull
-    private TMDBMovie getTMDbMovie(OmdbMovie movie, String text, String path, JsonElement posterPath) {
-        TMDBMovie tmdbMovie = new TMDBMovie();
+    private TmdbMovie getTMDbMovie(OmdbMovie movie, String text, String path, JsonElement posterPath) {
+        TmdbMovie tmdbMovie = new TmdbMovie();
         tmdbMovie.setTitle(movie.getTitle());
         tmdbMovie.setPlot(text);
         tmdbMovie.setImageUrl(path);
@@ -101,11 +101,11 @@ public class OtherInfoWindow {
         return tmdbMovie;
     }
 
-    private void updateUI(String text, String path) {
+    private void updateUI(TmdbMovie tmdbMovieSearched) {
         try {
-            BufferedImage image = getImageFromURL(path);
+            BufferedImage image = getImageFromURL(tmdbMovieSearched.getImageUrl());
             setImageLabel(image);
-            populateDescriptionTextPane(text);
+            populateDescriptionTextPane(tmdbMovieSearched.getPlot());
         } catch (Exception e1) {
             e1.printStackTrace();
         }

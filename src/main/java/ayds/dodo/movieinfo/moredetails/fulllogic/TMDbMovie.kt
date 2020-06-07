@@ -1,6 +1,6 @@
 package ayds.dodo.movieinfo.moredetails.fulllogic
 
-class TMDBMovie{
+open class TmdbMovie{
     var title=""
     var plot=""
     var imageUrl = ""

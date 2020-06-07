@@ -16,9 +16,10 @@ object DataBase {
 
     private fun getSelectQuery(title: String) = "select * from info WHERE title = '$title'"
 
-    private fun getInsertQuery(title: String, plot: String, imageUrl: String, posterUrl : String) = "insert into info values(null, '$title', '$plot', '$imageUrl', '$posterUrl')"
+    private fun getInsertQuery(title: String, plot: String, imageUrl: String, posterUrl: String) = "insert into info values(null, '$title', '$plot', '$imageUrl', '$posterUrl')"
 
-    private fun getColumnByTitle(title: String, column: String): String? {
+    @JvmStatic
+    fun getTmdbMovie(title: String): TmdbMovie {
         var connection = DriverManager.getConnection(URL)
         val statement = connection.createStatement()
         try {
@@ -26,15 +27,20 @@ object DataBase {
             val rs = statement.executeQuery(getSelectQuery(title))
             return if (!rs.isClosed) {
                 rs.next()
-                rs.getString(column)
-            } else null
+                val movie=TmdbMovie()
+                movie.title = title
+                movie.plot = rs.getString(PLOT_COLUMN)
+                movie.imageUrl = rs.getString(IMAGE_URL_COLUMN)
+                movie.posterUrl = rs.getString(POSTER_URL_COLUMN)
+                movie
+            } else NonExistentTmdbMovie
         } catch (e: SQLException) {
-            System.err.println("Error getting column: \""+column+"\": " + e.message)
+            System.err.println("Error getting movie: " + title + " " + e.message)
         } finally {
             statement.close()
             connection.close()
         }
-        return null
+        return NonExistentTmdbMovie
     }
 
     @JvmStatic
@@ -57,7 +63,7 @@ object DataBase {
     }
 
     @JvmStatic
-    fun saveMovieInfo(movie: TMDBMovie) {
+    fun saveMovieInfo(movie: TmdbMovie) {
         DriverManager.getConnection(URL).use { connection ->
             try {
                 val statement = connection.createStatement()
@@ -67,20 +73,5 @@ object DataBase {
                 System.err.println("saveMovieInfo error: " + e.message)
             }
         }
-    }
-
-    @JvmStatic
-    fun getOverview(title: String): String? {
-        return getColumnByTitle(title, PLOT_COLUMN)
-    }
-
-    @JvmStatic
-    fun getImageUrl(title: String): String? {
-        return getColumnByTitle(title, IMAGE_URL_COLUMN)
-    }
-
-    @JvmStatic
-    fun getPosterUrl(title: String) : String? {
-        return getColumnByTitle(title, POSTER_URL_COLUMN)
     }
 }
