@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 
+import static ayds.dodo.movieinfo.moredetails.fulllogic.NonExistentTmdbMovie.IMAGE_NOT_FOUND;
+import static ayds.dodo.movieinfo.moredetails.fulllogic.NonExistentTmdbMovie.NO_RESULTS_MESSAGES;
+
 public class OtherInfoWindow {
     private JPanel contentPane;
     private JTextPane movieDescriptionPane;
@@ -34,13 +37,11 @@ public class OtherInfoWindow {
     private static final String FONT_CLOSE = "</font>";
     private static final String BOLD_OPEN = "<b>";
     private static final String BOLD_CLOSE = "</b>";
-    private static final String IMAGE_NOT_FOUND = "https://farm5.staticflickr.com/4363/36346283311_1dec5bb2c2.jpg";
     private static final String IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/";
     private static final String RESULTS_JSON = "results";
     private static final String OVERVIEW_JSON = "overview";
     private static final String POSTER_PATH_JSON = "poster_path";
     private static final String BACKDROP_PATH_JSON = "backdrop_path";
-    private static final String NO_RESULTS_MESSAGES = "No Results";
     private static final String RELEASE_DATE = "release_date";
 
     public void getMoviePlot(OmdbMovie movie) {
@@ -68,13 +69,10 @@ public class OtherInfoWindow {
                     if (extract != JsonNull.INSTANCE && posterPath != JsonNull.INSTANCE) {
                         String path = backdropPath != null && !backdropPath.equals("") ? IMAGE_URL_BASE + backdropPath : IMAGE_NOT_FOUND;
                         String text = formatText(movie, posterPath, extract);
-                        tmdbMovieSearched = getTMDbMovie(movie, text, path, posterPath);
+                        tmdbMovieSearched = createTmdbMovie(movie, text, path, posterPath);
 
                         DataBase.saveMovieInfo(tmdbMovieSearched);
                     }
-                } else{
-                    tmdbMovieSearched.setPlot(NO_RESULTS_MESSAGES);
-                    tmdbMovieSearched.setImageUrl(IMAGE_NOT_FOUND);
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -86,7 +84,7 @@ public class OtherInfoWindow {
     }
 
     @NotNull
-    private TmdbMovie getTMDbMovie(OmdbMovie movie, String text, String path, JsonElement posterPath) {
+    private TmdbMovie createTmdbMovie(OmdbMovie movie, String text, String path, JsonElement posterPath) {
         TmdbMovie tmdbMovie = new TmdbMovie();
         tmdbMovie.setTitle(movie.getTitle());
         tmdbMovie.setPlot(text);
