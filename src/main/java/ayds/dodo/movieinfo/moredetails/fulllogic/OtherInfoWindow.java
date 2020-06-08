@@ -44,40 +44,41 @@ public class OtherInfoWindow {
     private static final String RELEASE_DATE = "release_date";
 
     public void getMoviePlot(OmdbMovie movie) {
-        Retrofit retrofit = getRetrofit();
-
-        TheMovieDBAPI tmdbAPI = retrofit.create(TheMovieDBAPI.class);
-
-        new Thread(() -> initOtherInfoData(movie, tmdbAPI)).start();
+        new Thread(() -> initOtherInfoData(movie)).start();
     }
 
-    private void initOtherInfoData(OmdbMovie movie, TheMovieDBAPI tmdbAPI) {
+    private void initOtherInfoData(OmdbMovie movie) {
         TmdbMovie tmdbMovieSearched = DataBase.getTmdbMovie(movie.getTitle());
 
         if (tmdbMovieSearched == NonExistentTmdbMovie.INSTANCE) {
-            try {
-                Iterator<JsonElement> resultIterator = getJsonElementIterator(tmdbAPI, movie);
-                JsonObject result = getInfoFromTmdb(resultIterator, movie);
-                if (result != null) {
-                    String backdropPath = getBackdrop(result);
-                    JsonElement posterPath = result.get(POSTER_PATH_JSON);
-                    JsonElement extract = result.get(OVERVIEW_JSON);
-
-                    if (extract != JsonNull.INSTANCE && posterPath != JsonNull.INSTANCE) {
-                        String path = backdropPath != null && !backdropPath.equals("") ? IMAGE_URL_BASE + backdropPath : IMAGE_NOT_FOUND;
-                        String text = formatText(movie, posterPath, extract);
-                        tmdbMovieSearched = createTmdbMovie(movie, text, path, posterPath);
-
-                        DataBase.saveMovieInfo(tmdbMovieSearched);
-                    }
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            tmdbMovieSearched = getTmdbMovieFromServer(movie);
         }
 
         setSystemLookAndFeel();
         updateUI(tmdbMovieSearched);
+    }
+
+    private TmdbMovie getTmdbMovieFromServer(OmdbMovie movie) {
+        try {
+            Iterator<JsonElement> resultIterator = getJsonElementIterator( movie);
+            JsonObject result = getInfoFromTmdb(resultIterator, movie);
+            if (result != null) {
+                String backdropPath = getBackdrop(result);
+                JsonElement posterPath = result.get(POSTER_PATH_JSON);
+                JsonElement extract = result.get(OVERVIEW_JSON);
+
+                if (extract != JsonNull.INSTANCE && posterPath != JsonNull.INSTANCE) {
+                    String path = backdropPath != null && !backdropPath.equals("") ? IMAGE_URL_BASE + backdropPath : IMAGE_NOT_FOUND;
+                    String text = formatText(movie, posterPath, extract);
+                    TmdbMovie tmdbMovieSearched = createTmdbMovie(movie, text, path, posterPath);
+                    DataBase.saveMovieInfo(tmdbMovieSearched);
+                    return tmdbMovieSearched;
+                }
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return NonExistentTmdbMovie.INSTANCE;
     }
 
     @NotNull
@@ -235,7 +236,10 @@ public class OtherInfoWindow {
     }
 
     @NotNull
-    private Iterator<JsonElement> getJsonElementIterator(TheMovieDBAPI tmdbAPI, OmdbMovie movie) throws java.io.IOException {
+    private Iterator<JsonElement> getJsonElementIterator(OmdbMovie movie) throws java.io.IOException {
+        Retrofit retrofit = getRetrofit();
+        TheMovieDBAPI tmdbAPI = retrofit.create(TheMovieDBAPI.class);
+
         Response<String> callResponse = tmdbAPI.getTerm(movie.getTitle()).execute();
 
         Gson gson = new Gson();
