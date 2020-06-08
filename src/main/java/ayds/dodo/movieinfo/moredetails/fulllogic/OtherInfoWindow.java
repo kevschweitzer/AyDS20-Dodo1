@@ -136,52 +136,49 @@ public class OtherInfoWindow {
                 .build();
     }
 
-    public static void open(OmdbMovie movie) {
-        OtherInfoWindow win = initOtherInfoWindow();
-        setupOtherInfoFrame(win);
+    public void open(OmdbMovie movie) {
+        initOtherInfoWindow();
+        setupOtherInfoFrame();
         DataBase.createNewDatabase();
-        win.getMoviePlot(movie);
+        getMoviePlot(movie);
     }
 
-    @NotNull
-    private static OtherInfoWindow initOtherInfoWindow() {
-        OtherInfoWindow win = new OtherInfoWindow();
-
-        win.contentPane = new JPanel();
-        win.contentPane.setLayout(new BoxLayout(win.contentPane, BoxLayout.PAGE_AXIS));
+    private void  initOtherInfoWindow() {
+        contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
 
         JLabel label = new JLabel();
         label.setText(MORE_DETAILS_HEADER);
-        win.contentPane.add(label);
+        contentPane.add(label);
 
-        win.imagePanel = new JPanel();
-        win.contentPane.add(win.imagePanel);
+        imagePanel = new JPanel();
+        contentPane.add(imagePanel);
 
-        JPanel descriptionPanel = setupMovieDescriptionPane(win);
-        win.contentPane.add(descriptionPanel);
-        return win;
+        JPanel descriptionPanel = setupMovieDescriptionPane();
+        contentPane.add(descriptionPanel);
+
     }
 
-    private static void setupOtherInfoFrame(OtherInfoWindow win) {
+    private void setupOtherInfoFrame() {
         JFrame frame = new JFrame(FRAME_TITLE);
         frame.setMinimumSize(new Dimension(600, 600));
-        frame.setContentPane(win.contentPane);
+        frame.setContentPane(contentPane);
         frame.pack();
         frame.setVisible(true);
     }
 
-    @NotNull
-    private static JPanel setupMovieDescriptionPane(OtherInfoWindow win) {
+
+    private JPanel setupMovieDescriptionPane() {
         JPanel descriptionPanel = new JPanel();
-        win.movieDescriptionPane = new JTextPane();
-        win.movieDescriptionPane.setEditable(false);
-        win.movieDescriptionPane.setContentType(TEXT_TYPE);
-        win.movieDescriptionPane.setMaximumSize(new Dimension(600, 400));
-        descriptionPanel.add(win.movieDescriptionPane);
+        movieDescriptionPane = new JTextPane();
+        movieDescriptionPane.setEditable(false);
+        movieDescriptionPane.setContentType(TEXT_TYPE);
+        movieDescriptionPane.setMaximumSize(new Dimension(600, 400));
+        descriptionPanel.add(movieDescriptionPane);
         return descriptionPanel;
     }
 
-    public static String textToHtml(String text, String term) {
+    public String textToHtml(String text, String term) {
         StringBuilder builder = new StringBuilder(HTML_OPEN + BODY_STYLE);
         builder.append(FONT_STYLE_OPEN);
         String textWithBold = text
