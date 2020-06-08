@@ -64,14 +64,15 @@ object DataBase {
 
     @JvmStatic
     fun saveMovieInfo(movie: TmdbMovie) {
-        DriverManager.getConnection(URL).use { connection ->
-            try {
-                val statement = connection.createStatement()
-                statement.queryTimeout = STATEMENT_TIMEOUT
-                statement.executeUpdate(getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
-            } catch (e: SQLException) {
-                System.err.println("saveMovieInfo error: " + e.message)
+        if (movie !is NonExistentTmdbMovie)
+            DriverManager.getConnection(URL).use { connection ->
+                try {
+                    val statement = connection.createStatement()
+                    statement.queryTimeout = STATEMENT_TIMEOUT
+                    statement.executeUpdate(getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
+                } catch (e: SQLException) {
+                    System.err.println("saveMovieInfo error: " + e.message)
+                }
             }
-        }
     }
 }

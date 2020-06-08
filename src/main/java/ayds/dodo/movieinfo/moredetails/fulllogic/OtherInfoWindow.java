@@ -48,14 +48,19 @@ public class OtherInfoWindow {
     }
 
     private void initOtherInfoData(OmdbMovie movie) {
+        TmdbMovie tmdbMovieSearched = getTmdbMovie(movie);
+        setSystemLookAndFeel();
+        updateUI(tmdbMovieSearched);
+    }
+
+    private TmdbMovie getTmdbMovie(OmdbMovie movie) {
         TmdbMovie tmdbMovieSearched = DataBase.getTmdbMovie(movie.getTitle());
 
         if (tmdbMovieSearched == NonExistentTmdbMovie.INSTANCE) {
             tmdbMovieSearched = getTmdbMovieFromServer(movie);
+            DataBase.saveMovieInfo(tmdbMovieSearched);
         }
-
-        setSystemLookAndFeel();
-        updateUI(tmdbMovieSearched);
+        return tmdbMovieSearched;
     }
 
     private TmdbMovie getTmdbMovieFromServer(OmdbMovie movie) {
@@ -71,7 +76,6 @@ public class OtherInfoWindow {
                     String path = backdropPath != null && !backdropPath.equals("") ? IMAGE_URL_BASE + backdropPath : IMAGE_NOT_FOUND;
                     String text = formatText(movie, posterPath, extract);
                     TmdbMovie tmdbMovieSearched = createTmdbMovie(movie, text, path, posterPath);
-                    DataBase.saveMovieInfo(tmdbMovieSearched);
                     return tmdbMovieSearched;
                 }
             }
