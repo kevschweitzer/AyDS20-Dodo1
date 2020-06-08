@@ -1,4 +1,3 @@
 package ayds.dodo.movieinfo.home.model.entities
 
-object NonExistentOmdbMovie:OmdbMovie() {
-}
+object NonExistentOmdbMovie : OmdbMovie()

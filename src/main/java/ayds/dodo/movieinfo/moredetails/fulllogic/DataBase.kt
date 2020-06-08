@@ -1,113 +1,78 @@
 package ayds.dodo.movieinfo.moredetails.fulllogic
 
-import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
 object DataBase {
+    private const val STATEMENT_TIMEOUT = 30
+    private const val URL = "jdbc:sqlite:./extra_info.db"
+    private const val TABLE_NAME = "info"
+    private const val ID_COLUMN = "id"
+    private const val TITLE_COLUMN = "title"
+    private const val PLOT_COLUMN = "plot"
+    private const val IMAGE_URL_COLUMN = "image_url"
+    private const val POSTER_URL_COLUMN = "poster_url"
+    private const val CREATE_TABLE_QUERY = "create table $TABLE_NAME ($ID_COLUMN INTEGER PRIMARY KEY AUTOINCREMENT, $TITLE_COLUMN string, $PLOT_COLUMN string, $IMAGE_URL_COLUMN string, $POSTER_URL_COLUMN string)"
+
+    private fun getSelectQuery(title: String) = "select * from info WHERE title = '$title'"
+
+    private fun getInsertQuery(title: String, plot: String, imageUrl: String, posterUrl: String) = "insert into info values(null, '$title', '$plot', '$imageUrl', '$posterUrl')"
+
+    @JvmStatic
+    fun getTmdbMovie(title: String): TmdbMovie {
+        val connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
+        try {
+            statement.queryTimeout = 30
+            val rs = statement.executeQuery(getSelectQuery(title))
+            return if (!rs.isClosed) {
+                rs.next()
+                val movie = TmdbMovie()
+                movie.title = title
+                movie.plot = rs.getString(PLOT_COLUMN)
+                movie.imageUrl = rs.getString(IMAGE_URL_COLUMN)
+                movie.posterUrl = rs.getString(POSTER_URL_COLUMN)
+                movie
+            } else NonExistentTmdbMovie
+        } catch (e: SQLException) {
+            System.err.println("Error getting movie: " + title + " " + e.message)
+        } finally {
+            statement.close()
+            connection.close()
+        }
+        return NonExistentTmdbMovie
+    }
+
     @JvmStatic
     fun createNewDatabase() {
-        val url = "jdbc:sqlite:./extra_info.db"
+        val connection = DriverManager.getConnection(URL)
+        val statement = connection.createStatement()
         try {
-            DriverManager.getConnection(url).use { connection ->
-                if (connection != null) {
-                    val meta = connection.metaData
-                    println("The driver name is " + meta.driverName)
-                    println("A new database has been created.")
-                    val statement = connection.createStatement()
+            if (connection != null) {
+                if (connection.metaData?.getTables(null, null, TABLE_NAME, null)?.next() == false) {
                     statement.queryTimeout = 30
-                    statement.executeUpdate("create table info (id INTEGER PRIMARY KEY AUTOINCREMENT, title string, plot string, image_url string, source integer)")
+                    statement.executeUpdate(CREATE_TABLE_QUERY)
                 }
             }
         } catch (e: SQLException) {
-            println(e.message)
-        }
-    }
-
-    fun testDB() {
-        var connection: Connection? = null
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery("select * from info")
-            while (rs.next()) { // read the result set
-                println("id = " + rs.getInt("id"))
-                println("title = " + rs.getString("title"))
-                println("source = " + rs.getString("source"))
-            }
-        } catch (e: SQLException) {
-            System.err.println(e.message)
+            System.err.println("Error creating DB: " + e.message)
         } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
+            statement.close()
+            connection.close()
         }
     }
 
     @JvmStatic
-    fun saveMovieInfo(title: String, plot: String, imageUrl: String) {
-        var connection: Connection? = null
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30 // set timeout to 30 sec.
-            println("INSERT  $title', '$plot', '$plot")
-            statement.executeUpdate("insert into info values(null, '$title', '$plot', '$imageUrl', 1)")
-        } catch (e: SQLException) {
-            System.err.println("Error saving " + e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
+    fun saveMovieInfo(movie: TmdbMovie) {
+        if (movie !is NonExistentTmdbMovie)
+            DriverManager.getConnection(URL).use { connection ->
+                try {
+                    val statement = connection.createStatement()
+                    statement.queryTimeout = STATEMENT_TIMEOUT
+                    statement.executeUpdate(getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
+                } catch (e: SQLException) {
+                    System.err.println("saveMovieInfo error: " + e.message)
+                }
             }
-        }
-    }
-
-    @JvmStatic
-    fun getOverview(title: String): String? {
-        var connection: Connection? = null
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery("select * from info WHERE title = '$title'")
-            rs.next()
-            return rs.getString("plot")
-        } catch (e: SQLException) {
-            System.err.println("Get title error " + e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
-        }
-        return null
-    }
-
-    @JvmStatic
-    fun getImageUrl(title: String): String? {
-        var connection: Connection? = null
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:./extra_info.db")
-            val statement = connection.createStatement()
-            statement.queryTimeout = 30
-            val rs = statement.executeQuery("select * from info WHERE title = '$title'")
-            rs.next()
-            return rs.getString("image_url")
-        } catch (e: SQLException) {
-            System.err.println("Get title error " + e.message)
-        } finally {
-            try {
-                connection?.close()
-            } catch (e: SQLException) {
-                System.err.println(e)
-            }
-        }
-        return null
     }
 }
