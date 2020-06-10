@@ -1,6 +1,10 @@
 package ayds.dodo.movieinfo.moredetails.fulllogic;
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie;
+import ayds.dodo.movieinfo.moredetails.model.repository.local.DataBase;
+import ayds.dodo.movieinfo.moredetails.model.entities.NonExistentTmdbMovie;
+import ayds.dodo.movieinfo.moredetails.model.repository.external.TheMovieDBAPI;
+import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -20,7 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 
-import static ayds.dodo.movieinfo.moredetails.fulllogic.NonExistentTmdbMovie.IMAGE_NOT_FOUND;
+import static ayds.dodo.movieinfo.moredetails.model.entities.NonExistentTmdbMovie.IMAGE_NOT_FOUND;
 
 public class OtherInfoWindow {
     private JPanel contentPane;

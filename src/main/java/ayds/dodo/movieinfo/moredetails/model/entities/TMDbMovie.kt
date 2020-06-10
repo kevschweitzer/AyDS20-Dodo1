@@ -1,4 +1,4 @@
-package ayds.dodo.movieinfo.moredetails.fulllogic
+package ayds.dodo.movieinfo.moredetails.model.entities
 
 open class TmdbMovie {
     var title = ""

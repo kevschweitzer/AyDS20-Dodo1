@@ -1,4 +1,4 @@
-package ayds.dodo.movieinfo.moredetails.fulllogic
+package ayds.dodo.movieinfo.moredetails.model.entities
 
 object NonExistentTmdbMovie : TmdbMovie() {
     const val NO_RESULTS_MESSAGES = "No Results"

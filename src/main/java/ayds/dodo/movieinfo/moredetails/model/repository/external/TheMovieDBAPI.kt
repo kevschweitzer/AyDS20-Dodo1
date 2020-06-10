@@ -1,4 +1,4 @@
-package ayds.dodo.movieinfo.moredetails.fulllogic
+package ayds.dodo.movieinfo.moredetails.model.repository.external
 
 import retrofit2.Call
 import retrofit2.http.GET

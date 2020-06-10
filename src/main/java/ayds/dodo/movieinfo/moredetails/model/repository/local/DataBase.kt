@@ -1,7 +1,11 @@
-package ayds.dodo.movieinfo.moredetails.fulllogic
+package ayds.dodo.movieinfo.moredetails.model.repository.local
 
+import ayds.dodo.movieinfo.moredetails.model.entities.NonExistentTmdbMovie
+import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie
+import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
+import java.sql.Statement
 
 object DataBase {
     private const val STATEMENT_TIMEOUT = 30
@@ -20,9 +24,11 @@ object DataBase {
 
     @JvmStatic
     fun getTmdbMovie(title: String): TmdbMovie {
-        val connection = DriverManager.getConnection(URL)
-        val statement = connection.createStatement()
+        var connection : Connection? = null
+        var statement : Statement? = null
         try {
+            connection =  DriverManager.getConnection(URL)
+            statement =  connection.createStatement()
             statement.queryTimeout = 30
             val rs = statement.executeQuery(getSelectQuery(title))
             return if (!rs.isClosed) {
@@ -32,22 +38,25 @@ object DataBase {
                 movie.plot = rs.getString(PLOT_COLUMN)
                 movie.imageUrl = rs.getString(IMAGE_URL_COLUMN)
                 movie.posterUrl = rs.getString(POSTER_URL_COLUMN)
+                rs.close()
                 movie
             } else NonExistentTmdbMovie
         } catch (e: SQLException) {
             System.err.println("Error getting movie: " + title + " " + e.message)
         } finally {
-            statement.close()
-            connection.close()
+            statement?.close()
+            connection?.close()
         }
         return NonExistentTmdbMovie
     }
 
     @JvmStatic
     fun createNewDatabase() {
-        val connection = DriverManager.getConnection(URL)
-        val statement = connection.createStatement()
+        var connection : Connection? = null
+        var statement : Statement? = null
         try {
+            connection = DriverManager.getConnection(URL)
+            statement = connection.createStatement()
             if (connection != null) {
                 if (connection.metaData?.getTables(null, null, TABLE_NAME, null)?.next() == false) {
                     statement.queryTimeout = 30
@@ -57,22 +66,28 @@ object DataBase {
         } catch (e: SQLException) {
             System.err.println("Error creating DB: " + e.message)
         } finally {
-            statement.close()
-            connection.close()
+            statement?.close()
+            connection?.close()
         }
     }
 
     @JvmStatic
     fun saveMovieInfo(movie: TmdbMovie) {
-        if (movie !is NonExistentTmdbMovie)
-            DriverManager.getConnection(URL).use { connection ->
-                try {
-                    val statement = connection.createStatement()
-                    statement.queryTimeout = STATEMENT_TIMEOUT
-                    statement.executeUpdate(getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
-                } catch (e: SQLException) {
-                    System.err.println("saveMovieInfo error: " + e.message)
-                }
+        if (movie !is NonExistentTmdbMovie) {
+            var connection: Connection? = null
+            var statement: Statement? = null
+            try {
+                connection = DriverManager.getConnection(URL)
+                statement = connection.createStatement()
+                statement.queryTimeout = STATEMENT_TIMEOUT
+                statement.executeUpdate(getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
+                statement.close()
+            } catch (e: SQLException) {
+                System.err.println("saveMovieInfo error: " + e.message)
+            } finally {
+                statement?.close()
+                connection?.close()
             }
+        }
     }
 }
