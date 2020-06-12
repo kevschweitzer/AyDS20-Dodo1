@@ -3,8 +3,9 @@ package ayds.dodo.movieinfo.moredetails.view
 import java.awt.Dimension
 import javax.swing.*
 
-class moredetailsViewImp {
-
+class moredetailsViewImp(): MoredetailsView {
+//class moredetailsViewImp(moredetailsModel:MoredetailsModel): MoredetailsView {
+    //private val moredetails:MoredetailsModel
     private var contentPane: JPanel? = null
     private var movieDescriptionPane: JTextPane? = null
     private var imagePanel: JPanel? = null
@@ -12,6 +13,14 @@ class moredetailsViewImp {
     private val MORE_DETAILS_HEADER = "Data from The Movie Data Base"
     private val TEXT_TYPE = "text/html"
 
+    init{
+        //this.moredetails = moredetailsModel
+    }
+
+    override fun openView() {
+        initOtherInfoWindow()
+        setupOtherInfoFrame()
+    }
 
     private fun initOtherInfoWindow() {
         contentPane = JPanel()
@@ -32,7 +41,6 @@ class moredetailsViewImp {
         frame.pack()
         frame.isVisible = true
     }
-
 
     private fun setupMovieDescriptionPane(): JPanel {
         val descriptionPanel = JPanel()
