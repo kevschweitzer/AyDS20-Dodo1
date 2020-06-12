@@ -13,7 +13,7 @@ internal interface TmdbResponseToTmdbMovie {
     fun getMovie(movie : OmdbMovie, body: String?) : TmdbMovie
 }
 
-internal class TmdbResponseToTmdbMovieImp : TmdbResponseToTmdbMovie {
+class TmdbResponseToTmdbMovieImp : TmdbResponseToTmdbMovie {
     private val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
     private val RESULTS_JSON = "results"
     private val OVERVIEW_JSON = "overview"

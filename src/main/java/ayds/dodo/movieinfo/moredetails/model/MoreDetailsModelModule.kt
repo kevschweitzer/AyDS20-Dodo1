@@ -1,7 +1,14 @@
 package ayds.dodo.movieinfo.moredetails.model
 
+import ayds.dodo.movieinfo.home.model.repository.OmdbRepositoryImpl
 import ayds.dodo.movieinfo.moredetails.model.repository.TmdbRepositoryImp
 import ayds.dodo.movieinfo.moredetails.model.repository.external.tmdb.TheMovieDBAPI
+import ayds.dodo.movieinfo.moredetails.model.repository.external.tmdb.TmdbResponseToTmdbMovie
+import ayds.dodo.movieinfo.moredetails.model.repository.external.tmdb.TmdbResponseToTmdbMovieImp
+import ayds.dodo.movieinfo.moredetails.model.repository.external.tmdb.TmdbService
+import ayds.dodo.movieinfo.moredetails.model.repository.local.db.DataBase
+import ayds.dodo.movieinfo.moredetails.model.repository.local.db.SqlQueries
+import ayds.dodo.movieinfo.moredetails.model.repository.local.db.SqlQueriesImp
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
@@ -11,7 +18,7 @@ object MoreDetailsModelModule {
 
     private fun getTmdbAPI(): TheMovieDBAPI = retrofit.create(TheMovieDBAPI::class.java)
 
-    private val repository = TmdbRepositoryImp()
+    private val repository = TmdbRepositoryImp(DataBase(), TmdbService(getTmdbAPI(), TmdbResponseToTmdbMovieImp()))
 
     val moreDetailsModel: MoreDetailsModel = MoreDetailsModelImpl(repository)
 }
