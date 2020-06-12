@@ -15,7 +15,7 @@ internal class MoreDetailsModelImpl(private val repository: TmdbRepositoryImp) :
     private val movieSubject = Subject<TmdbMovie>()
 
     override fun getMoviePlot(movie: OmdbMovie) {
-        DataBase.getTmdbMovie(movie.title)?.let {
+        repository.getMovie(movie)?.let {
             movieSubject.notify(it)
         }
     }
