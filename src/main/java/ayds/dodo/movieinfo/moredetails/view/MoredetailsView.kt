@@ -1,6 +1,6 @@
 package ayds.dodo.movieinfo.moredetails.view
 
-interface MoredeatilsView {
+interface MoredetailsView {
 
     fun initOtherInfoWindow()
 
