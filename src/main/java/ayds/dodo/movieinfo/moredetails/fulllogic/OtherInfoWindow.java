@@ -1,9 +1,9 @@
 package ayds.dodo.movieinfo.moredetails.fulllogic;
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie;
-import ayds.dodo.movieinfo.moredetails.model.repository.local.DataBase;
+import ayds.dodo.movieinfo.moredetails.model.repository.local.db.DataBase;
 import ayds.dodo.movieinfo.moredetails.model.entities.NonExistentTmdbMovie;
-import ayds.dodo.movieinfo.moredetails.model.repository.external.TheMovieDBAPI;
+import ayds.dodo.movieinfo.moredetails.model.repository.external.tmdb.TheMovieDBAPI;
 import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -46,6 +46,7 @@ public class OtherInfoWindow {
     private static final String POSTER_PATH_JSON = "poster_path";
     private static final String BACKDROP_PATH_JSON = "backdrop_path";
     private static final String RELEASE_DATE = "release_date";
+    private static final DataBase db = new DataBase();
 
     public void getMoviePlot(OmdbMovie movie) {
         new Thread(() -> initOtherInfoData(movie)).start();
@@ -58,11 +59,11 @@ public class OtherInfoWindow {
     }
 
     private TmdbMovie getTmdbMovie(OmdbMovie movie) {
-        TmdbMovie tmdbMovieSearched = DataBase.getTmdbMovie(movie.getTitle());
+        TmdbMovie tmdbMovieSearched = db.getTmdbMovie(movie.getTitle());
 
         if (tmdbMovieSearched == NonExistentTmdbMovie.INSTANCE) {
             tmdbMovieSearched = getTmdbMovieFromServer(movie);
-            DataBase.saveMovieInfo(tmdbMovieSearched);
+            db.saveMovieInfo(tmdbMovieSearched);
         }
         return tmdbMovieSearched;
     }
@@ -148,7 +149,6 @@ public class OtherInfoWindow {
     public void open(OmdbMovie movie) {
         initOtherInfoWindow();
         setupOtherInfoFrame();
-        DataBase.createNewDatabase();
         getMoviePlot(movie);
     }
 

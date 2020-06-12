@@ -1,4 +1,4 @@
-package ayds.dodo.movieinfo.moredetails.model.repository.external
+package ayds.dodo.movieinfo.moredetails.model.repository.external.tmdb
 
 import retrofit2.Call
 import retrofit2.http.GET
