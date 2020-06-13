@@ -1,8 +1,11 @@
 package ayds.dodo.movieinfo.moredetails.view
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
+import ayds.dodo.movieinfo.home.view.UiEvent
 import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
 import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie
+import ayds.observer.Observable
+import ayds.observer.Subject
 import java.awt.Desktop
 import java.awt.Dimension
 import java.awt.image.BufferedImage
@@ -20,10 +23,15 @@ class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
     private val FRAME_TITLE = "Movie Info Dodo"
     private val MORE_DETAILS_HEADER = "Data from The Movie Data Base"
     private val TEXT_TYPE = "text/html"
+    private val onActionSubject = Subject<MoreDetailsUiEvent>()
 
     override fun openView(movie: OmdbMovie) {
         initOtherInfoWindow()
         setupOtherInfoFrame()
+    }
+
+    override fun onUiEvent(): Observable<MoreDetailsUiEvent> {
+        return onActionSubject
     }
 
     private fun initOtherInfoWindow() {
