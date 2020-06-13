@@ -32,7 +32,6 @@ class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
         setupOtherInfoFrame()
         initObservers()
         onActionSubject.notify(MoreDetailsUiEvent.SEARCH_ACTION)
-
     }
 
     override fun onUiEvent(): Observable<MoreDetailsUiEvent> {

@@ -1,8 +1,11 @@
 package ayds.dodo.movieinfo.moredetails.controller
 
+import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModelModule
+import ayds.dodo.movieinfo.moredetails.view.moredetailsViewModule
+
 
 object MoreDetailsControllerModule {
     fun init() {
-        // HomeControllerImpl(MoreDetailsViewModule.homeView, MoreDetailsModelModule.homeModel)
+         MoreDetailsControllerImpl(moredetailsViewModule.moredetailsView, MoreDetailsModelModule.moreDetailsModel)
     }
 }

@@ -9,7 +9,7 @@ import ayds.observer.Observer
 interface MoreDetailsController
 
 internal class MoreDetailsControllerImpl(
-        private val moreDetailsModel: MoreDetailsModel,private val moreDetailsView: MoredetailsView
+        private val moreDetailsView: MoredetailsView,private val moreDetailsModel: MoreDetailsModel
 ) : MoreDetailsController{
     //Esto no se si va porque more details no tiene eventos a los que responder.
     // Crear UIEvente de la more details view 

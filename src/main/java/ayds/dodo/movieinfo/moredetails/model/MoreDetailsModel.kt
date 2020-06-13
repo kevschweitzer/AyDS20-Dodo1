@@ -8,8 +8,11 @@ import ayds.observer.Observable
 import ayds.observer.Subject
 
 interface MoreDetailsModel {
+
     fun getMoviePlot(movie : OmdbMovie)
+
     fun movieObservable(): Observable<TmdbMovie>
+
 }
 
 internal class MoreDetailsModelImpl(private val repository: TmdbRepositoryImp) : MoreDetailsModel {
