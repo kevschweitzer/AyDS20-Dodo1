@@ -14,6 +14,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object MoreDetailsModelModule {
     private val TMDB_URL_BASE = "https://api.themoviedb.org/3/"
+
     private val retrofit = Retrofit.Builder().baseUrl(TMDB_URL_BASE).addConverterFactory(ScalarsConverterFactory.create()).build()
 
     private fun getTmdbAPI(): TheMovieDBAPI = retrofit.create(TheMovieDBAPI::class.java)

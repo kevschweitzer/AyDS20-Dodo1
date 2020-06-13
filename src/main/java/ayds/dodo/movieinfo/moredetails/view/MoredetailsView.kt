@@ -5,6 +5,7 @@ import ayds.dodo.movieinfo.home.view.UiEvent
 import ayds.observer.Observable
 
 interface MoredetailsView {
-    fun openView(movie: OmdbMovie)
+    var movie :OmdbMovie
+    fun openView(movie : OmdbMovie)
     fun onUiEvent(): Observable<MoreDetailsUiEvent>
 }

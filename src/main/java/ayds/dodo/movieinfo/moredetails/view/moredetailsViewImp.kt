@@ -1,7 +1,6 @@
 package ayds.dodo.movieinfo.moredetails.view
 
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
-import ayds.dodo.movieinfo.home.view.UiEvent
 import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
 import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie
 import ayds.observer.Observable
@@ -13,9 +12,11 @@ import java.net.URL
 import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.event.HyperlinkEvent
+import ayds.observer.Observer
 
 
 class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
+    override lateinit var movie: OmdbMovie
     private val moredetails: MoreDetailsModel = moredetailsModel
     private var contentPane: JPanel = JPanel()
     private var movieDescriptionPane: JTextPane = JTextPane()
@@ -25,15 +26,26 @@ class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
     private val TEXT_TYPE = "text/html"
     private val onActionSubject = Subject<MoreDetailsUiEvent>()
 
-    override fun openView(movie: OmdbMovie) {
+    override fun openView(movie : OmdbMovie) {
+        this.movie=movie
         initOtherInfoWindow()
         setupOtherInfoFrame()
+        initObservers()
+        onActionSubject.notify(MoreDetailsUiEvent.SEARCH_ACTION)
+
     }
 
     override fun onUiEvent(): Observable<MoreDetailsUiEvent> {
         return onActionSubject
     }
 
+    private fun initObservers() {
+        moredetails.movieObservable().subscribe(object : Observer<TmdbMovie> {
+            override fun update(movie: TmdbMovie) {
+                updateUI(movie)
+            }
+        })
+    }
     private fun initOtherInfoWindow() {
         contentPane.layout = BoxLayout(contentPane, BoxLayout.PAGE_AXIS)
         val label = JLabel()

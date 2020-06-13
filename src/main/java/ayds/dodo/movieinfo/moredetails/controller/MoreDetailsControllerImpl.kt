@@ -1,25 +1,33 @@
 package ayds.dodo.movieinfo.moredetails.controller
 
+import ayds.dodo.movieinfo.home.view.HomeView
+import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
+import ayds.dodo.movieinfo.moredetails.view.MoreDetailsUiEvent
+import ayds.dodo.movieinfo.moredetails.view.MoredetailsView
 import ayds.observer.Observer
 
 interface MoreDetailsController
 
 internal class MoreDetailsControllerImpl(
-        // aca va el model y la view como private val
+        private val moreDetailsModel: MoreDetailsModel,private val moreDetailsView: MoredetailsView
 ) : MoreDetailsController{
-    /*
-    Esto no se si va porque more details no tiene eventos a los que responder.
+    //Esto no se si va porque more details no tiene eventos a los que responder.
     // Crear UIEvente de la more details view 
-    private val observer: Observer<UiEvent> = object : Observer<UiEvent> {
-        override fun update(value: UiEvent) {
+    private val observer: Observer<MoreDetailsUiEvent> = object : Observer<MoreDetailsUiEvent> {
+        override fun update(value: MoreDetailsUiEvent) {
             when (value) {
-
+                MoreDetailsUiEvent.SEARCH_ACTION -> onSearchMovieAction()
             }
         }
-    }*/
-
-    init {
-        //moreDetailesView.onUiEvent().subscribe(observer)
     }
 
+    init {
+        moreDetailsView.onUiEvent().subscribe(observer)
+    }
+
+    private fun onSearchMovieAction() {
+        Thread {
+            moreDetailsModel.getMoviePlot(moreDetailsView.movie)
+        }.start()
+    }
 }
