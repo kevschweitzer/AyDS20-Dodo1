@@ -10,18 +10,20 @@ import com.google.gson.JsonObject
 import java.io.IOException
 
 internal interface TmdbResponseToTmdbMovie {
-    fun getMovie(movie : OmdbMovie, body: String?) : TmdbMovie
+    fun getMovie(movie: OmdbMovie, body: String?): TmdbMovie
 }
 
 class TmdbResponseToTmdbMovieImp : TmdbResponseToTmdbMovie {
-    private val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
-    private val RESULTS_JSON = "results"
-    private val OVERVIEW_JSON = "overview"
-    private val POSTER_PATH_JSON = "poster_path"
-    private val BACKDROP_PATH_JSON = "backdrop_path"
-    private val RELEASE_DATE = "release_date"
+    companion object {
+        private const val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
+        private const val RESULTS_JSON = "results"
+        private const val OVERVIEW_JSON = "overview"
+        private const val POSTER_PATH_JSON = "poster_path"
+        private const val BACKDROP_PATH_JSON = "backdrop_path"
+        private const val RELEASE_DATE = "release_date"
+    }
 
-    override fun getMovie(movie : OmdbMovie, body : String?): TmdbMovie {
+    override fun getMovie(movie: OmdbMovie, body: String?): TmdbMovie {
         try {
             val resultIterator: Iterator<JsonElement> = getJsonElementIterator(body) as Iterator<JsonElement>
             val result: JsonObject? = getInfoFromTmdb(resultIterator, movie)

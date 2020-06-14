@@ -4,6 +4,7 @@ import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
 import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie
 import ayds.observer.Observable
+import ayds.observer.Observer
 import ayds.observer.Subject
 import java.awt.Desktop
 import java.awt.Dimension
@@ -12,22 +13,28 @@ import java.net.URL
 import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.event.HyperlinkEvent
-import ayds.observer.Observer
 
 
-class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
+class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
+    companion object {
+        private const val FRAME_TITLE = "Movie Info Dodo"
+        private const val MORE_DETAILS_HEADER = "Data from The Movie Data Base"
+        private const val TEXT_TYPE = "text/html"
+    }
+
     override lateinit var movie: OmdbMovie
-    private val moredetails: MoreDetailsModel = moredetailsModel
-    private var contentPane: JPanel = JPanel()
-    private var movieDescriptionPane: JTextPane = JTextPane()
-    private var imagePanel: JPanel = JPanel()
-    private val FRAME_TITLE = "Movie Info Dodo"
-    private val MORE_DETAILS_HEADER = "Data from The Movie Data Base"
-    private val TEXT_TYPE = "text/html"
+    private val moreDetailsModel: MoreDetailsModel = moreDetailsModel
+    private val contentPane: JPanel = JPanel()
+    private val movieDescriptionPane: JTextPane = JTextPane()
+    private val imagePanel: JPanel = JPanel()
     private val onActionSubject = Subject<MoreDetailsUiEvent>()
+    private val descriptionPanel = JPanel()
+    private val headerLabel = JLabel()
+    private val imageLabel = JLabel()
+    private val frame = JFrame(FRAME_TITLE)
 
-    override fun openView(movie : OmdbMovie) {
-        this.movie=movie
+    override fun openView(movie: OmdbMovie) {
+        this.movie = movie
         initOtherInfoWindow()
         setupOtherInfoFrame()
         initObservers()
@@ -39,38 +46,34 @@ class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
     }
 
     private fun initObservers() {
-        moredetails.movieObservable().subscribe(object : Observer<TmdbMovie> {
+        moreDetailsModel.movieObservable().subscribe(object : Observer<TmdbMovie> {
             override fun update(movie: TmdbMovie) {
                 updateUI(movie)
             }
         })
     }
+
     private fun initOtherInfoWindow() {
         contentPane.layout = BoxLayout(contentPane, BoxLayout.PAGE_AXIS)
-        val label = JLabel()
-        label.text = MORE_DETAILS_HEADER
-        contentPane.add(label)
+        headerLabel.text = MORE_DETAILS_HEADER
+        contentPane.add(headerLabel)
         contentPane.add(imagePanel)
-        val descriptionPanel: JPanel = setupMovieDescriptionPane()
+        setupMovieDescriptionPane()
         contentPane.add(descriptionPanel)
     }
 
     private fun setupOtherInfoFrame() {
-        val frame = JFrame(FRAME_TITLE)
         frame.minimumSize = Dimension(600, 600)
         frame.contentPane = contentPane
         frame.pack()
         frame.isVisible = true
     }
 
-    private fun setupMovieDescriptionPane(): JPanel {
-        val descriptionPanel = JPanel()
-        movieDescriptionPane = JTextPane()
+    private fun setupMovieDescriptionPane() {
         movieDescriptionPane.isEditable = false
         movieDescriptionPane.contentType = TEXT_TYPE
         movieDescriptionPane.maximumSize = Dimension(600, 400)
         descriptionPanel.add(movieDescriptionPane)
-        return descriptionPanel
     }
 
     fun updateUI(tmdbMovie: TmdbMovie) {
@@ -85,8 +88,8 @@ class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
     }
 
     private fun setImageLabel(image: BufferedImage) {
-        val label = JLabel(ImageIcon(image))
-        imagePanel.add(label)
+        imageLabel.icon = ImageIcon(image)
+        imagePanel.add(imageLabel)
         contentPane.validate()
         contentPane.repaint()
     }
@@ -104,7 +107,7 @@ class moredetailsViewImp(moredetailsModel: MoreDetailsModel) : MoredetailsView {
             }
         }
         movieDescriptionPane.text = TmdbMovieDescriptionHelperImpl()
-                .getMovieDescriptionText(tmdbMovie);
+                .getMovieDescriptionText(tmdbMovie)
     }
 
 }

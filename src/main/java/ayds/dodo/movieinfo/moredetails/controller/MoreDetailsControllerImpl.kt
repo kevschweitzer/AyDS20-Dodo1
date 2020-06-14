@@ -1,15 +1,14 @@
 package ayds.dodo.movieinfo.moredetails.controller
 
-import ayds.dodo.movieinfo.home.view.HomeView
 import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
 import ayds.dodo.movieinfo.moredetails.view.MoreDetailsUiEvent
-import ayds.dodo.movieinfo.moredetails.view.MoredetailsView
+import ayds.dodo.movieinfo.moredetails.view.MoreDetailsView
 import ayds.observer.Observer
 
 interface MoreDetailsController
 
 internal class MoreDetailsControllerImpl(
-        private val moreDetailsView: MoredetailsView,private val moreDetailsModel: MoreDetailsModel
+        private val moreDetailsView: MoreDetailsView, private val moreDetailsModel: MoreDetailsModel
 ) : MoreDetailsController{
     //Esto no se si va porque more details no tiene eventos a los que responder.
     // Crear UIEvente de la more details view 
