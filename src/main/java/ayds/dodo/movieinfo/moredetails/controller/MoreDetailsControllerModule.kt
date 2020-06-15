@@ -5,7 +5,7 @@ import ayds.dodo.movieinfo.moredetails.view.MoreDetailsViewModule
 
 
 object MoreDetailsControllerModule {
-    fun init() {
-         MoreDetailsControllerImpl(MoreDetailsViewModule.moredetailsView, MoreDetailsModelModule.moreDetailsModel)
-    }
+    private val moreDetailsController: MoreDetailsController = MoreDetailsControllerImpl(MoreDetailsViewModule.moredetailsView, MoreDetailsModelModule.moreDetailsModel)
+
+    fun init() {}
 }
