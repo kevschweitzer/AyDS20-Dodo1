@@ -84,7 +84,7 @@ internal class DataBase : LocalStorage{
         try {
             statement = connection.createStatement()
             statement.queryTimeout = STATEMENT_TIMEOUT
-            statement.executeUpdate(SqlQueriesImp.getInsertQuery(movie.title, movie.plot, movie.imageUrl, movie.posterUrl))
+            statement.executeUpdate(SqlQueriesImp.getInsertQuery(movie.title, movie.plot.replace("'", "`"), movie.imageUrl, movie.posterUrl))
             statement.close()
         } catch (e: SQLException) {
             System.err.println("saveMovieInfo error: " + e.message)
