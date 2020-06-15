@@ -4,7 +4,6 @@ import ayds.dodo.movieinfo.home.model.HomeModel
 import ayds.dodo.movieinfo.home.view.HomeView
 import ayds.dodo.movieinfo.home.view.UiEvent
 import ayds.dodo.movieinfo.moredetails.controller.MoreDetailsControllerModule
-import ayds.dodo.movieinfo.moredetails.fulllogic.OtherInfoWindow
 import ayds.dodo.movieinfo.moredetails.view.MoreDetailsViewModule
 import ayds.observer.Observer
 
@@ -34,8 +33,6 @@ internal class HomeControllerImpl(
     }
 
     private fun onMoreDetailsAction() {
-        //var win = OtherInfoWindow()
-        //win.open(homeModel.getLastMovie())
         MoreDetailsControllerModule.init()
         homeModel.getLastMovie()?.let { MoreDetailsViewModule.moredetailsView.openView(it) }
     }

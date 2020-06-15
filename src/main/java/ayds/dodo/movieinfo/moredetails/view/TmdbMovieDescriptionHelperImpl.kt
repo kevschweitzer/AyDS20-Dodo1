@@ -13,7 +13,6 @@ class TmdbMovieDescriptionHelperImpl : TmdbMovieDescriptionHelper {
         const val BOLD_CLOSE = "</b>"
         const val NEW_LINE = "\n"
         const val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
-
     }
 
     override fun getMovieDescriptionText(movie: TmdbMovie): String {
@@ -22,7 +21,6 @@ class TmdbMovieDescriptionHelperImpl : TmdbMovieDescriptionHelper {
             with(builder) {
                 val plot = movie.plot.replace("\\n", "\n")
                 val textWithBold = plot
-                        .replace("'", "`")
                         .replace(movie.title.toRegex(), BOLD_OPEN + movie.title.toUpperCase() + BOLD_CLOSE)
                 append(HTML_OPEN + BODY_STYLE)
                 append(FONT_STYLE_OPEN)
