@@ -3,7 +3,6 @@ package ayds.dodo.movieinfo.home.controller
 import ayds.dodo.movieinfo.home.model.HomeModel
 import ayds.dodo.movieinfo.home.view.HomeView
 import ayds.dodo.movieinfo.home.view.UiEvent
-import ayds.dodo.movieinfo.moredetails.controller.MoreDetailsControllerModule
 import ayds.dodo.movieinfo.moredetails.view.MoreDetailsViewModule
 import ayds.observer.Observer
 
@@ -33,7 +32,6 @@ internal class HomeControllerImpl(
     }
 
     private fun onMoreDetailsAction() {
-        MoreDetailsControllerModule.init()
-        homeModel.getLastMovie()?.let { MoreDetailsViewModule.moredetailsView.openView(it) }
+        homeModel.getLastMovie()?.let { MoreDetailsViewModule.moreDetailsView.openView(it) }
     }
 }
