@@ -1,4 +1,4 @@
-package ayds.dodo.movieinfo.home.model.repository.local.sqldb
+package ayds.dodo.movieinfo.utils.sql
 
 import java.sql.Connection
 import java.sql.DriverManager
@@ -6,7 +6,7 @@ import java.sql.SQLException
 import java.sql.Statement
 
 abstract class SqlDB {
-    private lateinit var connection: Connection
+    protected lateinit var connection: Connection
     protected abstract val dbUrl: String
 
     protected fun openConnection() {
