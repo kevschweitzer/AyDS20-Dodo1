@@ -12,7 +12,6 @@ class TmdbMovieDescriptionHelperImpl : TmdbMovieDescriptionHelper {
         const val BOLD_OPEN = "<b>"
         const val BOLD_CLOSE = "</b>"
         const val NEW_LINE = "\n"
-        const val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
     }
 
     override fun getMovieDescriptionText(movie: TmdbMovie): String {
@@ -27,15 +26,10 @@ class TmdbMovieDescriptionHelperImpl : TmdbMovieDescriptionHelper {
                 append(textWithBold)
                 append(FONT_CLOSE)
                 append(NEW_LINE)
-                append(createMoviePosterAnchor(movie))
                 toString()
             }
         } else {
             movie.plot
         }
-    }
-
-    private fun createMoviePosterAnchor(movie: TmdbMovie): String? {
-        return "<a href=" + IMAGE_URL_BASE + movie.posterUrl + ">View Movie Poster</a>"
     }
 }

@@ -1,5 +1,6 @@
 package ayds.dodo.movieinfo.moredetails.view
 
 enum class MoreDetailsUiEvent {
-    SEARCH_ACTION
+    SEARCH_ACTION,
+    POSTER_ACTION
 }

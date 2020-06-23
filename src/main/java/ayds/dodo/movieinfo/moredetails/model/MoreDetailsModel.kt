@@ -12,6 +12,7 @@ interface MoreDetailsModel {
 
     fun movieObservable(): Observable<TmdbMovie>
 
+    fun getLastMovie(): TmdbMovie?
 }
 
 internal class MoreDetailsModelImpl(private val repository: TmdbRepositoryImp) : MoreDetailsModel {
@@ -25,4 +26,6 @@ internal class MoreDetailsModelImpl(private val repository: TmdbRepositoryImp) :
     }
 
     override fun movieObservable(): Observable<TmdbMovie> = movieSubject
+
+    override fun getLastMovie(): TmdbMovie? = movieSubject.lastValue()
 }
