@@ -33,12 +33,16 @@ class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
     private val imageLabel = JLabel()
     private val frame = JFrame(FRAME_TITLE)
 
-    override fun openView(movie: OmdbMovie) {
-        this.movie = movie
+    init {
         initOtherInfoWindow()
         setupOtherInfoFrame()
         initObservers()
+    }
+
+    override fun openView(movie: OmdbMovie) {
+        this.movie = movie
         onActionSubject.notify(MoreDetailsUiEvent.SEARCH_ACTION)
+        frame.isVisible = true
     }
 
     override fun onUiEvent(): Observable<MoreDetailsUiEvent> {
@@ -66,7 +70,7 @@ class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
         frame.minimumSize = Dimension(600, 600)
         frame.contentPane = contentPane
         frame.pack()
-        frame.isVisible = true
+        frame.isVisible = false
     }
 
     private fun setupMovieDescriptionPane() {
