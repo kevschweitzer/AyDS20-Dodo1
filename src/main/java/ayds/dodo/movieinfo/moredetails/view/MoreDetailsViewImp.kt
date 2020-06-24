@@ -1,6 +1,5 @@
 package ayds.dodo.movieinfo.moredetails.view
 
-import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
 import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie
 import ayds.observer.Observable
@@ -21,7 +20,6 @@ class MoreDetailsViewImp(private val moreDetailsModel: MoreDetailsModel) : MoreD
         private const val POSTER_BUTTON_TEXT = "View Movie Poster"
     }
 
-    override lateinit var movie: OmdbMovie
     private val moreDetailsContentPane: JPanel = JPanel()
     private val movieDescriptionPane: JTextPane = JTextPane()
     private val imagePanel: JPanel = JPanel()
@@ -39,9 +37,7 @@ class MoreDetailsViewImp(private val moreDetailsModel: MoreDetailsModel) : MoreD
         initObservers()
     }
 
-    override fun openView(movie: OmdbMovie) {
-        this.movie = movie
-        onActionSubject.notify(MoreDetailsUiEvent.SEARCH_ACTION)
+    private fun openView() {
         frame.isVisible = true
     }
 
@@ -53,6 +49,7 @@ class MoreDetailsViewImp(private val moreDetailsModel: MoreDetailsModel) : MoreD
         moreDetailsModel.movieObservable().subscribe(object : Observer<TmdbMovie> {
             override fun update(movie: TmdbMovie) {
                 updateUI(movie)
+                openView()
             }
         })
     }

@@ -1,5 +1,6 @@
 package ayds.dodo.movieinfo.moredetails.controller
 
+import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 import ayds.dodo.movieinfo.moredetails.model.MoreDetailsModel
 import ayds.dodo.movieinfo.moredetails.view.MoreDetailsUiEvent
 import ayds.dodo.movieinfo.moredetails.view.MoreDetailsView
@@ -8,7 +9,9 @@ import java.awt.Desktop
 import java.io.IOException
 import java.net.URI
 
-interface MoreDetailsController
+interface MoreDetailsController {
+    fun start(movie: OmdbMovie)
+}
 
 internal class MoreDetailsControllerImpl(
         private val moreDetailsView: MoreDetailsView,
@@ -19,7 +22,6 @@ internal class MoreDetailsControllerImpl(
     private val observer: Observer<MoreDetailsUiEvent> = object : Observer<MoreDetailsUiEvent> {
         override fun update(value: MoreDetailsUiEvent) {
             when (value) {
-                MoreDetailsUiEvent.SEARCH_ACTION -> onSearchMovieAction()
                 MoreDetailsUiEvent.POSTER_ACTION -> showPoster()
             }
         }
@@ -29,9 +31,9 @@ internal class MoreDetailsControllerImpl(
         moreDetailsView.onUiEvent().subscribe(observer)
     }
 
-    private fun onSearchMovieAction() {
+    override fun start(movie: OmdbMovie) {
         Thread {
-            moreDetailsModel.getMoviePlot(moreDetailsView.movie)
+            moreDetailsModel.getMoviePlot(movie)
         }.start()
     }
 
