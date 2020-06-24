@@ -13,7 +13,7 @@ import java.net.URL
 import javax.imageio.ImageIO
 import javax.swing.*
 
-class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
+class MoreDetailsViewImp(private val moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
     companion object {
         private const val FRAME_TITLE = "Movie Info Dodo"
         private const val MORE_DETAILS_HEADER = "Data from The Movie Data Base"
@@ -22,8 +22,7 @@ class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
     }
 
     override lateinit var movie: OmdbMovie
-    private val moreDetailsModel: MoreDetailsModel = moreDetailsModel
-    private val contentPane: JPanel = JPanel()
+    private val moreDetailsContentPane: JPanel = JPanel()
     private val movieDescriptionPane: JTextPane = JTextPane()
     private val imagePanel: JPanel = JPanel()
     private val onActionSubject = Subject<MoreDetailsUiEvent>()
@@ -59,35 +58,43 @@ class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
     }
 
     private fun initOtherInfoWindow() {
-        contentPane.layout = BoxLayout(contentPane, BoxLayout.PAGE_AXIS)
         headerLabel.text = MORE_DETAILS_HEADER
-        posterButton
-        contentPane.add(headerLabel)
-        contentPane.add(imagePanel)
         setupMovieDescriptionPane()
-        contentPane.add(descriptionPanel)
-        contentPane.add(posterButton)
+        moreDetailsContentPane.apply {
+            layout = BoxLayout(moreDetailsContentPane, BoxLayout.PAGE_AXIS)
+            add(headerLabel)
+            add(imagePanel)
+            add(descriptionPanel)
+            add(posterButton)
+        }
     }
 
     private fun setupOtherInfoFrame() {
-        frame.minimumSize = Dimension(600, 600)
-        frame.contentPane = contentPane
-        frame.pack()
-        frame.isVisible = false
+        frame.apply {
+            minimumSize = Dimension(600, 600)
+            contentPane = moreDetailsContentPane
+            pack()
+            isVisible = false
+        }
+
     }
 
     private fun setupPosterButton() {
-        posterButton.text = POSTER_BUTTON_TEXT
-        posterButton.addActionListener { e: ActionEvent ->
-            onActionSubject.notify(MoreDetailsUiEvent.POSTER_ACTION)
+        posterButton.apply {
+            text = POSTER_BUTTON_TEXT
+            addActionListener { e: ActionEvent ->
+                onActionSubject.notify(MoreDetailsUiEvent.POSTER_ACTION)
+            }
         }
     }
 
     private fun setupMovieDescriptionPane() {
-        movieDescriptionPane.isEditable = false
-        movieDescriptionPane.contentType = TEXT_TYPE
-        movieDescriptionPane.maximumSize = Dimension(600, 400)
-        descriptionPanel.add(movieDescriptionPane)
+        movieDescriptionPane.apply {
+            isEditable = false
+            contentType = TEXT_TYPE
+            maximumSize = Dimension(600, 400)
+            descriptionPanel.add(this)
+        }
     }
 
     fun updateUI(tmdbMovie: TmdbMovie) {
@@ -104,14 +111,14 @@ class MoreDetailsViewImp(moreDetailsModel: MoreDetailsModel) : MoreDetailsView {
     private fun setImageLabel(image: BufferedImage) {
         imageLabel.icon = ImageIcon(image)
         imagePanel.add(imageLabel)
-        contentPane.validate()
-        contentPane.repaint()
+        moreDetailsContentPane.validate()
+        moreDetailsContentPane.repaint()
     }
 
     private fun populateDescriptionTextPane(tmdbMovie: TmdbMovie) {
-        movieDescriptionPane.contentType = TEXT_TYPE
-        movieDescriptionPane.text = TmdbMovieDescriptionHelperImpl()
-                .getMovieDescriptionText(tmdbMovie)
+        movieDescriptionPane.apply {
+            contentType = TEXT_TYPE
+            text = TmdbMovieDescriptionHelperImpl().getMovieDescriptionText(tmdbMovie)
+        }
     }
-
 }
