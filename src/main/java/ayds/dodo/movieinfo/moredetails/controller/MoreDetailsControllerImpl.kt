@@ -14,7 +14,6 @@ internal class MoreDetailsControllerImpl(
         private val moreDetailsView: MoreDetailsView,
         private val moreDetailsModel: MoreDetailsModel
 ) : MoreDetailsController {
-    val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
 
     private val observer: Observer<MoreDetailsUiEvent> = object : Observer<MoreDetailsUiEvent> {
         override fun update(value: MoreDetailsUiEvent) {
@@ -38,7 +37,7 @@ internal class MoreDetailsControllerImpl(
     private fun showPoster() {
         val movie = moreDetailsModel.getLastMovie()
         try {
-            Desktop.getDesktop().browse(URI.create(IMAGE_URL_BASE + movie?.posterUrl))
+            Desktop.getDesktop().browse(URI.create(moreDetailsModel.getPosterUrl()))
         } catch (e: IOException) {
             e.printStackTrace()
         }
