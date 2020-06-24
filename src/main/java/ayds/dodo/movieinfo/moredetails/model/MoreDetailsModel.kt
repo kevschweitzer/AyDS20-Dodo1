@@ -13,9 +13,13 @@ interface MoreDetailsModel {
     fun movieObservable(): Observable<TmdbMovie>
 
     fun getLastMovie(): TmdbMovie?
+
+    fun getPosterUrl():String
 }
 
 internal class MoreDetailsModelImpl(private val repository: TmdbRepositoryImp) : MoreDetailsModel {
+
+    private val IMAGE_URL_BASE = "https://image.tmdb.org/t/p/w400/"
 
     private val movieSubject = Subject<TmdbMovie>()
 
@@ -23,6 +27,10 @@ internal class MoreDetailsModelImpl(private val repository: TmdbRepositoryImp) :
         repository.getMovie(movie)?.let {
             movieSubject.notify(it)
         }
+    }
+
+    override fun getPosterUrl(): String {
+        return IMAGE_URL_BASE + (movieSubject.lastValue()?.posterUrl)
     }
 
     override fun movieObservable(): Observable<TmdbMovie> = movieSubject
