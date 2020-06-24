@@ -35,6 +35,6 @@ internal class HomeControllerImpl(
     }
 
     private fun onMoreDetailsAction() {
-        homeModel.getLastMovie()?.let { MoreDetailsViewModule.moreDetailsView.openView(it) }
+        homeModel.getLastMovie()?.let { moreDetailsController.start(it) }
     }
 }
