@@ -11,11 +11,9 @@ internal class TmdbService(
 ) : ExternalService{
 
     override fun getMovie(movie: OmdbMovie): TmdbMovie {
-        val callResponse = getTmdbMovieFromService(movie)
+        val callResponse = getTmdbMovieFromService(movie.title)
         return tmdbMovieResolver.getMovie(movie, callResponse?.body())
     }
 
-    private fun getTmdbMovieFromService(movie: OmdbMovie): Response<String?>? {
-        return tmdbAPI.getTerm(movie.title)?.execute()
-    }
+    private fun getTmdbMovieFromService(title: String) = tmdbAPI.getTerm(title)?.execute()
 }

@@ -37,7 +37,6 @@ internal class MoreDetailsControllerImpl(
     }
 
     private fun showPoster() {
-        val movie = moreDetailsModel.getLastMovie()
         try {
             Desktop.getDesktop().browse(URI.create(moreDetailsModel.getPosterUrl()))
         } catch (e: IOException) {
