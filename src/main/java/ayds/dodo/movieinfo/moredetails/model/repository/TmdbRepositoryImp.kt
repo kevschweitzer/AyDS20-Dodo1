@@ -3,7 +3,7 @@ package ayds.dodo.movieinfo.moredetails.model.repository
 import ayds.dodo.movieinfo.home.model.entities.OmdbMovie
 import ayds.dodo.movieinfo.moredetails.model.entities.NonExistentTmdbMovie
 import ayds.dodo.movieinfo.moredetails.model.entities.TmdbMovie
-import ayds.dodo1.TmdbData.external.ExternalService
+import ayds.dodo.movieinfo.moredetails.model.repository.external.ExternalService
 import ayds.dodo.movieinfo.moredetails.model.repository.local.LocalStorage
 
 class TmdbRepositoryImp(
