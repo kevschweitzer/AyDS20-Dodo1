@@ -1,0 +1,3 @@
+[submodule "libs/TmdbData"]
+	path = libs/TmdbData
+	url = https://github.com/FrancoMerino/AyDS-Dodo-1-TmdbSubmodule.git
